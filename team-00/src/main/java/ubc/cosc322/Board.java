@@ -54,8 +54,8 @@ public class Board {
 				} else {
 					System.out.print(" . ");
 				}
-				System.out.println(" |");
 			}
+			System.out.println(" |");
 		}
 		System.out.println(" ");
 		System.out.println(" ");
