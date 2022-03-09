@@ -132,7 +132,7 @@ public class COSC322Test extends GamePlayer{
     						.get(AmazonsGameMessage.Queen_POS_NEXT);
     				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
     				
-    				board.printBoard2();
+    				board.printBoard();
     				closestQueen(boardInit);
     					
     					
