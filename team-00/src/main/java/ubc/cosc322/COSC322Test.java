@@ -121,7 +121,10 @@ public class COSC322Test extends GamePlayer{
     						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     						{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     						{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 1, 0, 0, 0 } };
-    			
+    				
+    				Board board = new Board();
+    				
+    		
     				
     				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
     						.get(AmazonsGameMessage.QUEEN_POS_CURR);
@@ -129,20 +132,20 @@ public class COSC322Test extends GamePlayer{
     						.get(AmazonsGameMessage.Queen_POS_NEXT);
     				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
     				
-    				printMatrix(boardInit);
+    				board.printBoard2();
     				closestQueen(boardInit);
     					
     					
-    				int WorB = boardInit[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)];
+    				int WorB = board.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)];
 
     				// replace old location of piece with 0
-    				boardInit[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)] = 0;
+    				board.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)] = 0;
 
     				// if moving piece is white put 1 at coord else put 2
-    				boardInit[map.get(QueenPosNewEnemey).get(0)][map.get(QueenPosNewEnemey).get(1)] = (WorB == 1) ? 1 : 2;
+    				board.board[map.get(QueenPosNewEnemey).get(0)][map.get(QueenPosNewEnemey).get(1)] = (WorB == 1) ? 1 : 2;
 
     				// Update arrow location
-    				boardInit[map.get(ArrowPosEnemey).get(0)][map.get(ArrowPosEnemey).get(1)] = 3;
+    				board.board[map.get(ArrowPosEnemey).get(0)][map.get(ArrowPosEnemey).get(1)] = 3;
 
     				// Our positions to send
 
@@ -161,23 +164,23 @@ public class COSC322Test extends GamePlayer{
 
     				// Update the board for your moves
     				// Get if the moving piece is white or black
-    				WorB = boardInit[map.get(QueenPosCurSend).get(0)][map.get(QueenPosCurSend).get(1)];
+    				WorB = board.board[map.get(QueenPosCurSend).get(0)][map.get(QueenPosCurSend).get(1)];
 
     				// replace old location of piece with 0
-    				boardInit[map.get(QueenPosCurSend).get(0)][map.get(QueenPosCurSend).get(1)] = 0;
+    				board.board[map.get(QueenPosCurSend).get(0)][map.get(QueenPosCurSend).get(1)] = 0;
 
     				// if moving piece is white put 1 at coord else put 2
-    				boardInit[map.get(QueenPosNewSend).get(0)][map.get(QueenPosNewSend).get(1)] = (WorB == 1) ? 1 : 2;
+    				board.board[map.get(QueenPosNewSend).get(0)][map.get(QueenPosNewSend).get(1)] = (WorB == 1) ? 1 : 2;
 
     				// Update arrow location
-    				boardInit[map.get(ArrowPosSend).get(0)][map.get(ArrowPosSend).get(1)] = 3;
+    				board.board[map.get(ArrowPosSend).get(0)][map.get(ArrowPosSend).get(1)] = 3;
 
     				/*boardInit[map.get(QueenPosCurSend).get(0)][map.get(QueenPosCurSend).get(1)] = 0;
     				boardInit[map.get(QueenPosNewSend).get(0)][map.get(QueenPosNewSend).get(1)] = 2;
     				boardInit[map.get(ArrowPosSend).get(0)][map.get(ArrowPosSend).get(1)] = 3;*/
 
     				// print the board after all the moves have been made
-    				printMatrix(boardInit);
+    				board.printBoard2();
     				closestQueen(boardInit);
 
     				// Sending the positions

@@ -16,15 +16,15 @@ public class Board {
 	ArrayList<Position> BlackPos = new ArrayList<>();
 	
 	public Board() {
-		board[1][4] = BLACK;
-		board[1][7] = BLACK;
-		board[4][1] = BLACK;
-		board[4][10] = BLACK;
+		board[1-1][4-1] = BLACK;
+		board[1-1][7-1] = BLACK;
+		board[4-1][1-1] = BLACK;
+		board[4-1][10-1] = BLACK;
 		
-		board[7][1] = WHITE;
-		board[10][4] = WHITE;
-		board[10][7] = WHITE;
-		board[7][10] = WHITE;
+		board[7-1][1-1] = WHITE;
+		board[10-1][4-1] = WHITE;
+		board[10-1][7-1] = WHITE;
+		board[7-1][10-1] = WHITE;
 		
 		initialPos();
 	}
@@ -59,6 +59,25 @@ public class Board {
 		}
 		System.out.println(" ");
 		System.out.println(" ");
+	}
+	
+	public void printBoard2() {
+		int[][] matrix = this.board;
+		System.out.println("**********");
+		int counter = 0;
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix.length; j++) {
+				counter++;
+				System.out.print(matrix[i][j]);
+				if (counter == 10) {
+					System.out.println();
+
+					counter = 0;
+				}
+
+			}
+		}
+		System.out.println("**********");
 	}
 	
 	// getter and setter
