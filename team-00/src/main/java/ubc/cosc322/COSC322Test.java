@@ -180,7 +180,7 @@ public class COSC322Test extends GamePlayer{
     				boardInit[map.get(ArrowPosSend).get(0)][map.get(ArrowPosSend).get(1)] = 3;*/
 
     				// print the board after all the moves have been made
-    				board.printBoard2();
+    				board.printBoard();
     				closestQueen(boardInit);
 
     				// Sending the positions

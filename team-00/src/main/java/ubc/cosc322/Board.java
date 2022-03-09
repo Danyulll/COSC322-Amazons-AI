@@ -61,24 +61,6 @@ public class Board {
 		System.out.println(" ");
 	}
 	
-	public void printBoard2() {
-		int[][] matrix = this.board;
-		System.out.println("**********");
-		int counter = 0;
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix.length; j++) {
-				counter++;
-				System.out.print(matrix[i][j]);
-				if (counter == 10) {
-					System.out.println();
-
-					counter = 0;
-				}
-
-			}
-		}
-		System.out.println("**********");
-	}
 	
 	// getter and setter
 	public int getBoardPos(int x, int y) {
