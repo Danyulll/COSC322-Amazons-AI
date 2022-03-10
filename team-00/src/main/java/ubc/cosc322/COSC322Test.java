@@ -29,6 +29,9 @@ public class COSC322Test extends GamePlayer {
 	private String userName = "Ricky";
 	private String passwd = "hello";
 
+	public String whiteUser;
+	public String blackUser;
+	
 	/**
 	 * The main method
 	 * 
@@ -103,7 +106,9 @@ public class COSC322Test extends GamePlayer {
 		case GameMessage.GAME_ACTION_MOVE:
 
 			this.gamegui.updateGameState(msgDetails);
-
+			System.out.println("Main Case:");
+			System.out.println("White Username: " + this.whiteUser);
+			System.out.println("Black Username: " + this.blackUser);
 			Board board = new Board();
 
 			ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
@@ -161,6 +166,9 @@ public class COSC322Test extends GamePlayer {
 			// System.out.println((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
 			// System.out.println(AmazonsGameMessage.PLAYER_BLACK);
 			// System.out.println(AmazonsGameMessage.PLAYER_WHITE);
+			
+			this.blackUser = (String )msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
+			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 		default:
 			break;
 		}

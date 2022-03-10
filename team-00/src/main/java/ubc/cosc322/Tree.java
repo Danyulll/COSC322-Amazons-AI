@@ -71,5 +71,9 @@ class Node {
 
 		return count;
 	}
+	
+	/*public Board generatePartialGameTree(Board curr, boolean white) {
+		
+	}*/
 
 }
