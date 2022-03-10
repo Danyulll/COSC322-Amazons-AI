@@ -3,7 +3,7 @@ package ubc.cosc322;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Board {
+public class Board implements Cloneable {
 	public static final int ROWS = 10;
 	public static final int COLS = 10;
 
@@ -63,18 +63,32 @@ public class Board {
 	}
 
 	public Board updateGameBoard(Board current, ArrayList<Integer> QueenPosCurEnemey,
-			ArrayList<Integer> QueenPosNewEnemey, ArrayList<Integer> ArrowPosEnemey) {
-		HashMap<ArrayList<Integer>, ArrayList<Integer>> map = this.makeHashTable();
-		int WorB = this.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)];
+			ArrayList<Integer> QueenPosNewEnemey, ArrayList<Integer> ArrowPosEnemey, boolean conversionNeeded) {
+		if (conversionNeeded) {
 
-		// replace old location of piece with 0
-		this.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)] = 0;
+			HashMap<ArrayList<Integer>, ArrayList<Integer>> map = this.makeHashTable();
+			int WorB = this.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)];
 
-		// if moving piece is white put 1 at coord else put 2
-		this.board[map.get(QueenPosNewEnemey).get(0)][map.get(QueenPosNewEnemey).get(1)] = (WorB == 1) ? 1 : 2;
+			// replace old location of piece with 0
+			this.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)] = 0;
 
-		// Update arrow location
-		this.board[map.get(ArrowPosEnemey).get(0)][map.get(ArrowPosEnemey).get(1)] = 3;
+			// if moving piece is white put 1 at coord else put 2
+			this.board[map.get(QueenPosNewEnemey).get(0)][map.get(QueenPosNewEnemey).get(1)] = (WorB == 1) ? 1 : 2;
+
+			// Update arrow location
+			this.board[map.get(ArrowPosEnemey).get(0)][map.get(ArrowPosEnemey).get(1)] = 3;
+		} else {
+			int WorB = this.board[QueenPosCurEnemey.get(0)][QueenPosCurEnemey.get(1)];
+
+			// replace old location of piece with 0
+			this.board[QueenPosCurEnemey.get(0)][QueenPosCurEnemey.get(1)] = 0;
+
+			// if moving piece is white put 1 at coord else put 2
+			this.board[QueenPosNewEnemey.get(0)][QueenPosNewEnemey.get(1)] = (WorB == 1) ? 1 : 2;
+
+			// Update arrow location
+			this.board[ArrowPosEnemey.get(0)][ArrowPosEnemey.get(1)] = 3;
+		}
 		return this;
 	}
 
@@ -118,6 +132,14 @@ public class Board {
 
 		}
 		return boardConversion;
+	}
+
+	public Object clone() {
+		Board clone = new Board();
+		clone.board = this.board.clone();
+		clone.WhitePos = (ArrayList<Position>) this.WhitePos.clone();
+		clone.BlackPos = (ArrayList<Position>) this.BlackPos.clone();
+		return clone;
 	}
 
 	// getter and setter

@@ -108,14 +108,34 @@ public class COSC322Test extends GamePlayer {
 
 			this.gamegui.updateGameState(msgDetails);
 			// Figure out who is player 1
-			boolean player1 = (this.whiteUser.equals(this.userName)) ? true : false;
+			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
 
 			Board board = new Board();
 			// If we are player one make a move
-			if (player1) {
+			if (white) {
 				System.out.println("I am player one (white)");
-			} else if (!player1) { // If we are player 2 wait to recieve a move and then make a move
+				
+				//Construct initial Game tree
+				System.out.println("Constructing tree");
+				Tree partial = new Tree();
+				partial = partial.generatePartialGameTree(board, white);
+				System.out.println("Selecting Board");
+				Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
+				System.out.println("printing board move chosen");
+				moveToMake.printBoard();
+				//Make move decision
+				
+				//Send Move
+			} else if (!white) { // If we are player 2 wait to recieve a move and then make a move
 				System.out.println("I am player 2 (black)");
+				
+				//wait to recieve move
+				
+				//construct game tree
+				
+				//make move decision
+				
+				//send move
 			}
 
 			ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
@@ -124,13 +144,13 @@ public class COSC322Test extends GamePlayer {
 					.get(AmazonsGameMessage.Queen_POS_NEXT);
 			ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
-			board.printBoard();
+			//board.printBoard();
 
 			// Calculate Heuristic and print
 			TerritoryHeuristic heur = new TerritoryHeuristic();
 			TerritoryHeuristic.printHeuristic(heur.closestQueen(board));
 			// Update game board
-			board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey);
+			board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,true);
 
 			// Our positions to send
 
@@ -148,7 +168,7 @@ public class COSC322Test extends GamePlayer {
 			ArrowPosSend.add(3);
 
 			// print the board after all the moves have been made
-			board.updateGameBoard(board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+			board.updateGameBoard(board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend,true);
 			board.printBoard();
 
 			// Calculate Heuristic and print
