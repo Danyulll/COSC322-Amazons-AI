@@ -12,6 +12,10 @@ public class Queen {
 		this.queenNext = queenNext;
 		this.arrow = arrow;
 	}
+	//this is for when just need a position for generating legal moves
+	public Queen (Position queenCurr) {
+		this.queenCurr = queenCurr;
+	}
 	
 	public int getQueenCurrX() {
 		return queenCurr.getX();
