@@ -26,12 +26,12 @@ public class COSC322Test extends GamePlayer {
 	private GameClient gameClient = null;
 	private BaseGameGUI gamegui = null;
 
-	private String userName = "Ricky";
-	private String passwd = "hello";
+	private String userName;
+	private String passwd;
 
 	public String whiteUser;
 	public String blackUser;
-	
+
 	/**
 	 * The main method
 	 * 
@@ -86,6 +86,7 @@ public class COSC322Test extends GamePlayer {
 
 	@Override
 	public boolean handleGameMessage(String messageType, Map<String, Object> msgDetails) {
+
 		// This method will be called by the GameClient when it receives a game-related
 		// message
 		// from the server.
@@ -106,10 +107,16 @@ public class COSC322Test extends GamePlayer {
 		case GameMessage.GAME_ACTION_MOVE:
 
 			this.gamegui.updateGameState(msgDetails);
-			System.out.println("Main Case:");
-			System.out.println("White Username: " + this.whiteUser);
-			System.out.println("Black Username: " + this.blackUser);
+			// Figure out who is player 1
+			boolean player1 = (this.whiteUser.equals(this.userName)) ? true : false;
+
 			Board board = new Board();
+			// If we are player one make a move
+			if (player1) {
+				System.out.println("I am player one (white)");
+			} else if (!player1) { // If we are player 2 wait to recieve a move and then make a move
+				System.out.println("I am player 2 (black)");
+			}
 
 			ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 					.get(AmazonsGameMessage.QUEEN_POS_CURR);
@@ -118,11 +125,11 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
 			board.printBoard();
-			
-			//Calculate Heuristic and print
+
+			// Calculate Heuristic and print
 			TerritoryHeuristic heur = new TerritoryHeuristic();
 			TerritoryHeuristic.printHeuristic(heur.closestQueen(board));
-			//Update game board
+			// Update game board
 			board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey);
 
 			// Our positions to send
@@ -143,10 +150,9 @@ public class COSC322Test extends GamePlayer {
 			// print the board after all the moves have been made
 			board.updateGameBoard(board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 			board.printBoard();
-			
-			//Calculate Heuristic and print
+
+			// Calculate Heuristic and print
 			TerritoryHeuristic.printHeuristic(heur.closestQueen(board));
-			
 
 			// Sending the positions
 			gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
@@ -166,8 +172,8 @@ public class COSC322Test extends GamePlayer {
 			// System.out.println((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
 			// System.out.println(AmazonsGameMessage.PLAYER_BLACK);
 			// System.out.println(AmazonsGameMessage.PLAYER_WHITE);
-			
-			this.blackUser = (String )msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
+
+			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 		default:
 			break;
