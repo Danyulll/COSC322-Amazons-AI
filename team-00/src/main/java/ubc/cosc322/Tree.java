@@ -6,6 +6,7 @@ public class Tree {
 
 	// Attributes
 	private Node root;
+	private Board board;
 
 	// Constructors
 	public Tree() {
@@ -33,6 +34,7 @@ class Node {
 	private ArrayList<Node> children;
 	private Node parent;
 	private int value;
+	
 
 	// Constructors
 	public Node(Node parent, int value) {
