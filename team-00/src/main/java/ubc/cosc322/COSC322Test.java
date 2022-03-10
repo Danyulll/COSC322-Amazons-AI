@@ -189,14 +189,18 @@ public class COSC322Test extends GamePlayer{
     				
     				
     				
-    				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);    				t =30;
+    				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);    				
+    				t =30;
     				Timer timer = new Timer();
     				timer.schedule(new countDown(), 0, 5000);
     				break;
     				
     		case GameMessage.GAME_ACTION_START:
+    			
+    			//Print names of players and what color they are
+    			
     			//System.out.println("case action start");
-    		//	System.out.println(msgDetails.toString());
+    		    //System.out.println(msgDetails.toString());
     			//System.out.println((ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.GAME_STATE));
     			//System.out.println(AmazonsGameMessage.PLAYER_BLACK);
     			//System.out.println(AmazonsGameMessage.PLAYER_WHITE);
@@ -343,7 +347,7 @@ public class COSC322Test extends GamePlayer{
 				}
 			}
 		}
-		printMatrix(owned);
+		//printMatrix(owned); only for testing
 		return owned;
 	}
 	public static void printMatrix(int[][] matrix) {
