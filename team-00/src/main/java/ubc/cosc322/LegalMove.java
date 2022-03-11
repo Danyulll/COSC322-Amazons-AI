@@ -14,6 +14,8 @@ public class LegalMove {
 		for (int i = 1; currentCol+i < 10; i++) {
 			if(board.getBoardPos(currentRow, currentCol+i) == 0) {
 				moves.add(new Position(currentRow, currentCol+i));
+			} else {
+				break;
 			}
 		}
 		
@@ -21,6 +23,8 @@ public class LegalMove {
 		for (int i = 1; currentCol-i >= 0; i++) {
 			if(board.getBoardPos(currentRow, currentCol-i) == 0) {
 				moves.add(new Position(currentRow, currentCol-i));
+			} else {
+				break;
 			}
 		}
 		
@@ -28,6 +32,8 @@ public class LegalMove {
 		for (int i = 1; currentRow-i >= 0; i++) {
 			if(board.getBoardPos(currentRow-i, currentCol) == 0) {
 				moves.add(new Position(currentRow-i, currentCol));
+			} else {
+				break;
 			}
 		}
 		
@@ -35,6 +41,8 @@ public class LegalMove {
 		for (int i = 1; currentRow+i < 10; i++) {
 			if(board.getBoardPos(currentRow+i, currentCol) == 0) {
 				moves.add(new Position(currentRow+i, currentCol));
+			} else {
+				break;
 			}
 		}
 		
@@ -42,6 +50,8 @@ public class LegalMove {
 		for (int i = 1; currentRow-i >= 0 && currentCol-i >= 0; i++) {
 			if(board.getBoardPos(currentRow-i, currentCol-i) == 0) {
 				moves.add(new Position(currentRow-i, currentCol-i));
+			} else {
+				break;
 			}
 		}
 		
@@ -49,6 +59,8 @@ public class LegalMove {
 		for (int i = 1; currentRow-i >= 0 && currentCol+i < 10; i++) {
 			if(board.getBoardPos(currentRow-i, currentCol+i) == 0) {
 				moves.add(new Position(currentRow-i, currentCol+i));
+			} else {
+				break;
 			}
 		}
 		
@@ -56,6 +68,8 @@ public class LegalMove {
 		for (int i = 1; currentRow+i < 10 && currentCol+i < 10; i++) {
 			if(board.getBoardPos(currentRow+i, currentCol+i) == 0) {
 				moves.add(new Position(currentRow+i, currentCol+i));
+			} else {
+				break;
 			}
 		}
 		
@@ -63,6 +77,8 @@ public class LegalMove {
 		for (int i = 1; currentRow+i < 10 && currentCol-i >= 0; i++) {
 			if(board.getBoardPos(currentRow+i, currentCol-i) == 0) {
 				moves.add(new Position(currentRow+i, currentCol-i));
+			} else {
+				break;
 			}
 		}
 		return moves;
