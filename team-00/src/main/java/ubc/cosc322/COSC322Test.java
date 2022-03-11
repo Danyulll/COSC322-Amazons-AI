@@ -127,10 +127,11 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("original board:");
 				boardBeforeMove.printBoard();
 				
-				Board moveToMake = partial.getRoot().getChildren().get(100).getBoard();
+				Board moveToMake = partial.getRoot().getChildren().get((int)(Math.random()*2468)).getBoard();
 				System.out.println("printing board move chosen");
 				moveToMake.printBoard();
-				
+				TerritoryHeuristic heur = new TerritoryHeuristic();
+				heur.printHeuristic(heur.closestQueen(board));
 				//TODO turn this chosen board into coords that I can send to the server
 				//Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2]; 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class TerritoryHeuristic {
 
-	
 	public ArrayList<int[]> WhiteQueenLocations(int[][] board) {
 		ArrayList<int[]> WhiteQueensLocations = new ArrayList<>(4);
 		for (int i = 0; i < board.length; i++) {
@@ -19,6 +18,16 @@ public class TerritoryHeuristic {
 				}
 			}
 		}
+		/*
+		System.out.println(
+				"Location of Queen 1: " + WhiteQueensLocations.get(0)[0] + "," + WhiteQueensLocations.get(0)[1]);
+		System.out
+				.println("Location of Queen 2: " + WhiteQueensLocations.get(1)[0] + "," + WhiteQueensLocations.get(1)[1]);
+		System.out
+				.println("Location of Queen 3: " + WhiteQueensLocations.get(2)[0] + "," + WhiteQueensLocations.get(2)[1]);
+		System.out
+				.println("Location of Queen 4: " + WhiteQueensLocations.get(3)[0] + "," + WhiteQueensLocations.get(3)[1]);
+*/
 		return WhiteQueensLocations;
 	}
 
@@ -87,11 +96,11 @@ public class TerritoryHeuristic {
 				}
 			}
 		}
-		//printHeuristic(owned); // only for testing
+		 //printHeuristic(owned); // only for testing
 		return owned;
 	}
 
-	public static void printHeuristic(int[][] matrix) {
+	public void printHeuristic(int[][] matrix) {
 		System.out.println("**********");
 		int counter = 0;
 		for (int i = 0; i < matrix.length; i++) {
