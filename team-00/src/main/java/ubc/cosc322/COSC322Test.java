@@ -127,7 +127,7 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("original board:");
 				boardBeforeMove.printBoard();
 				
-				Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
+				Board moveToMake = partial.getRoot().getChildren().get(100).getBoard();
 				System.out.println("printing board move chosen");
 				moveToMake.printBoard();
 				

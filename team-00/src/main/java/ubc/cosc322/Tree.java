@@ -52,7 +52,7 @@ public class Tree {
 			// ArrayList<Position> movesQueen2 = moveGetter.getLegalMove(Queen2, curr);
 			// ArrayList<Position> movesQueen3 = moveGetter.getLegalMove(Queen3, curr);
 			// ArrayList<Position> movesQueen4 = moveGetter.getLegalMove(Queen4, curr);
-			int counter = 0;
+			//int counter = -20;
 			for (Position position : movesQueen1) {
 				System.out
 						.println("For each move in the queen's move list generate a full list of possible arrow shots");
@@ -60,7 +60,7 @@ public class Tree {
 				System.out.println("ex: " + arrowMoves.get(0).getX() + "," + arrowMoves.get(0).getY());
 
 				for (Position position2 : arrowMoves) {
-					counter++;
+					//counter++;
 					System.out.println("For each arrow move position lets generate a board and add it to the tree");
 					ArrayList<Integer> QueenPosCur = new ArrayList<>();
 					ArrayList<Integer> QueenPosNew = new ArrayList<>();
@@ -94,14 +94,14 @@ public class Tree {
 					tempNode.setBoard(tempBoard);
 					partial.root.addChild(tempNode);
 					
-					if(counter==1)
-						break;
+					//if(counter==1)
+						//break;
 					
 				}
-				counter++;
+				//counter++;
 				System.out.println("tree generation done");
-				if(counter==2)
-					break;
+				//if(counter==2)
+					//break;
 			}
 		} else { // generate moves for black
 
