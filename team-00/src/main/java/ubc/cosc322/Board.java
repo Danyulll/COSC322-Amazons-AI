@@ -92,6 +92,31 @@ public class Board implements Cloneable {
 		}
 		return this;
 	}
+	
+	public Board updateGameBoard(Board boardForArrowGeneration, ArrayList<Integer> QueenCur , ArrayList<Integer> QueenNew, boolean conversionNeeded) {
+		if (conversionNeeded) {
+
+			HashMap<ArrayList<Integer>, ArrayList<Integer>> map = this.makeHashTable();
+			int WorB = this.board[map.get(QueenCur).get(0)][map.get(QueenCur).get(1)];
+
+			// replace old location of piece with 0
+			this.board[map.get(QueenCur).get(0)][map.get(QueenCur).get(1)] = 0;
+
+			// if moving piece is white put 1 at coord else put 2
+			this.board[map.get(QueenNew).get(0)][map.get(QueenNew).get(1)] = (WorB == 1) ? 1 : 2;
+
+		} else {
+			int WorB = this.board[QueenCur.get(0)][QueenCur.get(1)];
+
+			// replace old location of piece with 0
+			this.board[QueenCur.get(0)][QueenCur.get(1)] = 0;
+
+			// if moving piece is white put 1 at coord else put 2
+			this.board[QueenNew.get(0)][QueenNew.get(1)] = (WorB == 1) ? 1 : 2;
+
+		}
+		return this;
+	}
 
 	public HashMap<ArrayList<Integer>, ArrayList<Integer>> makeHashTable() {
 		HashMap<ArrayList<Integer>, ArrayList<Integer>> boardConversion = new HashMap<>();

@@ -58,7 +58,19 @@ public class Tree {
 				LegalMove moveGetter = new LegalMove();
 				ArrayList<Position> movesQueen = moveGetter.getLegalMove(Queen, curr);
 				for (Position position : movesQueen) {
-					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position), curr);
+					// remove new Queen(position) from curr and generate arrow moves off of this
+					Board boardForArrowGeneration = (Board) curr.clone();
+					ArrayList<Integer> currentQueenForUpdatingArrowBoard = new ArrayList<>();
+					ArrayList<Integer> newQueenForUpdatingArrowBoard = new ArrayList<>();
+					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrX());
+					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrY());
+					newQueenForUpdatingArrowBoard.add(position.getX());
+					newQueenForUpdatingArrowBoard.add(position.getY());
+					boardForArrowGeneration.updateGameBoard(boardForArrowGeneration, currentQueenForUpdatingArrowBoard,
+							newQueenForUpdatingArrowBoard, false);
+					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position),
+							boardForArrowGeneration);
+
 					for (Position position2 : arrowMoves) {
 
 						ArrayList<Integer> QueenPosCur = new ArrayList<>();
@@ -116,7 +128,21 @@ public class Tree {
 				LegalMove moveGetter = new LegalMove();
 				ArrayList<Position> movesQueen = moveGetter.getLegalMove(Queen, curr);
 				for (Position position : movesQueen) {
-					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position), curr);
+					// remove new Queen(position) from curr and generate arrow moves off of this
+					/*Board boardForArrowGeneration = (Board) curr.clone();
+					boardForArrowGeneration.board[Queen.getQueenCurrX()][Queen.getQueenCurrY()] = 0;
+					ArrayList<Integer> currentQueenForUpdatingArrowBoard = new ArrayList<>();
+					ArrayList<Integer> newQueenForUpdatingArrowBoard = new ArrayList<>();
+					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrX());
+					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrY());
+					newQueenForUpdatingArrowBoard.add(position.getX());
+					newQueenForUpdatingArrowBoard.add(position.getY());
+					boardForArrowGeneration.updateGameBoard(boardForArrowGeneration, currentQueenForUpdatingArrowBoard,
+							newQueenForUpdatingArrowBoard, false);
+				*/
+					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position),
+							curr);
+
 					for (Position position2 : arrowMoves) {
 
 						ArrayList<Integer> QueenPosCur = new ArrayList<>();
