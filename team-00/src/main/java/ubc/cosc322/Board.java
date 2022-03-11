@@ -2,6 +2,7 @@ package ubc.cosc322;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class Board implements Cloneable {
 	public static final int ROWS = 10;
@@ -136,10 +137,70 @@ public class Board implements Cloneable {
 
 	public Object clone() {
 		Board clone = new Board();
-		clone.board = this.board.clone();
-		clone.WhitePos = (ArrayList<Position>) this.WhitePos.clone();
-		clone.BlackPos = (ArrayList<Position>) this.BlackPos.clone();
+		clone.board = new int[10][10];
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board.length; j++) {
+				clone.board[i][j] = this.board[i][j];
+			}
+		}
+
+		clone.WhitePos = new ArrayList<Position>();
+		int counter = 0;
+		for (Position position : this.WhitePos) {
+			Position temp = new Position(this.WhitePos.get(counter).getX(), this.WhitePos.get(counter).getY());
+			clone.WhitePos.add(temp);
+			counter++;
+		}
+		counter = 0;
+		clone.BlackPos = new ArrayList<Position>();
+		for (Position position : this.BlackPos) {
+			Position temp = new Position(this.BlackPos.get(counter).getX(), this.BlackPos.get(counter).getY());
+			clone.BlackPos.add(temp);
+			counter++;
+		}
 		return clone;
+	}
+	
+	public static HashMap<ArrayList<Integer>, ArrayList<Integer>> makeGaoTable() {
+		HashMap<ArrayList<Integer>,ArrayList<Integer>> gaoTable = new HashMap<>();
+		ArrayList<Integer> keys = new ArrayList<>();
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				keys.add(row);
+				keys.add(col);
+
+			}
+		}
+		
+		ArrayList<Integer> values = new ArrayList<>();
+		for (int row = 10; row > 0; row--) {
+			for (int col = 1; col < 11; col++) {
+				values.add(row);
+				values.add(col);
+
+			}
+		}
+		
+		int counter = 0, keyIndex = -1, valueIndex = -1;
+		boolean done = false;
+		while (!done) {
+			ArrayList<Integer> keyTemp = new ArrayList<>();
+			ArrayList<Integer> valueTemp = new ArrayList<>();
+			keyTemp.add(keys.get(++keyIndex));
+			keyTemp.add(keys.get(++keyIndex));
+
+			valueTemp.add(values.get(++valueIndex));
+			valueTemp.add(values.get(++valueIndex));
+
+			gaoTable.put(keyTemp, valueTemp);
+			counter++;
+			if (counter == 100) {
+				done = true;
+			}
+
+		}
+		
+		return gaoTable;
 	}
 
 	// getter and setter

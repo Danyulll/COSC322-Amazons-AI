@@ -2,7 +2,7 @@ package ubc.cosc322;
 
 import java.util.ArrayList;
 
-public class Position {
+public class Position implements Cloneable {
 	public int row, col;
 	
 	public Position(int x, int y) {
@@ -29,4 +29,9 @@ public class Position {
 		return row+","+col;
 	}
 
+	public Object clone() {
+		Position clone = new Position(this.row,this.col);
+		return clone;
+	}
+	
 }

@@ -77,16 +77,23 @@ public class Tree {
 
 					// clone the current board so we can add a updated version to the tree that
 					// doesn't affect our current board
-					System.out.println("Our copied board before chaning it");
+					System.out.println("curr before clone: ");
+					curr.printBoard();
+					System.out.println("tempbaord after clone but before update: ");
 					Board tempBoard = (Board) curr.clone();
 					tempBoard.printBoard();
-					System.out.println("Our copied board after updating it with the new move");
+					
+					System.out.println("tempbaord after update");
 					tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
 					tempBoard.printBoard();
 
+					System.out.println("Cur after updating tempboard (should be unchanged))");
+					curr.printBoard();
+					//System.out.println("Find out what part is not cloning:\nBoards: currBoard- " + curr.board.toString() + "\ntempBaord- " + tempBoard.board.toString() + "\nWhite Pos curr- " + curr.WhitePos + "\n Temp whitepos- " + tempBoard.WhitePos + "\n Cur black pos- " + curr.BlackPos + "\n Temp Blackpos- " + tempBoard.BlackPos );
 					Node tempNode = new Node(this.root, 0);
 					tempNode.setBoard(tempBoard);
 					partial.root.addChild(tempNode);
+					
 					if(counter==1)
 						break;
 					
