@@ -6,42 +6,35 @@ public class TerritoryHeuristic {
 
 	public ArrayList<int[]> WhiteQueenLocations(int[][] board) {
 		ArrayList<int[]> WhiteQueensLocations = new ArrayList<>(4);
+
+		int z = 0;
 		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[i].length; j++) {
+			for (int j = 0; j < board.length; j++) {
 				if (board[i][j] == 1) {
-					for (int q = 0; q < 4; q++) {
-						int[] value = new int[2];
-						value[0] = i;
-						value[1] = j;
-						WhiteQueensLocations.add(value);
-					}
+
+					int[] loc = new int[2];
+					loc[0] = i;
+					loc[1] = j;
+					WhiteQueensLocations.add(z, loc);
+					z++;
 				}
 			}
 		}
-		/*
-		System.out.println(
-				"Location of Queen 1: " + WhiteQueensLocations.get(0)[0] + "," + WhiteQueensLocations.get(0)[1]);
-		System.out
-				.println("Location of Queen 2: " + WhiteQueensLocations.get(1)[0] + "," + WhiteQueensLocations.get(1)[1]);
-		System.out
-				.println("Location of Queen 3: " + WhiteQueensLocations.get(2)[0] + "," + WhiteQueensLocations.get(2)[1]);
-		System.out
-				.println("Location of Queen 4: " + WhiteQueensLocations.get(3)[0] + "," + WhiteQueensLocations.get(3)[1]);
-*/
 		return WhiteQueensLocations;
 	}
 
 	public ArrayList<int[]> BlackQueenLocations(int[][] board) {
 		ArrayList<int[]> BlackQueensLocations = new ArrayList<>(4);
+		int z = 0;
 		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[i].length; j++) {
+			for (int j = 0; j < board.length; j++) {
 				if (board[i][j] == 2) {
-					for (int q = 0; q < 4; q++) {
-						int[] value = new int[2];
-						value[0] = i;
-						value[1] = j;
-						BlackQueensLocations.add(value);
-					}
+
+					int[] value = new int[2];
+					value[0] = i;
+					value[1] = j;
+					BlackQueensLocations.add(z, value);
+					z++;
 				}
 			}
 		}
@@ -96,7 +89,7 @@ public class TerritoryHeuristic {
 				}
 			}
 		}
-		 //printHeuristic(owned); // only for testing
+		// printHeuristic(owned); // only for testing
 		return owned;
 	}
 
