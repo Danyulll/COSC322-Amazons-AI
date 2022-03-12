@@ -1,43 +1,45 @@
 package ubc.cosc322;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TerritoryHeuristic {
 
 	public ArrayList<int[]> WhiteQueenLocations(int[][] board) {
-		ArrayList<int[]> WhiteQueensLocations = new ArrayList<>(4);
+		ArrayList<int[]> WhiteQueensLocations = new ArrayList<>();
 
-		int z = 0;
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board.length; j++) {
 				if (board[i][j] == 1) {
-
-					int[] loc = new int[2];
-					loc[0] = i;
-					loc[1] = j;
-					WhiteQueensLocations.add(z, loc);
-					z++;
+					int[] temp = new int[2];
+					temp[0] = i;
+					temp[1] = j;
+					WhiteQueensLocations.add(temp);
 				}
+
 			}
+
 		}
+
 		return WhiteQueensLocations;
 	}
 
 	public ArrayList<int[]> BlackQueenLocations(int[][] board) {
-		ArrayList<int[]> BlackQueensLocations = new ArrayList<>(4);
-		int z = 0;
+		ArrayList<int[]> BlackQueensLocations = new ArrayList<>();
+
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board.length; j++) {
 				if (board[i][j] == 2) {
-
-					int[] value = new int[2];
-					value[0] = i;
-					value[1] = j;
-					BlackQueensLocations.add(z, value);
-					z++;
+					int[] temp = new int[2];
+					temp[0] = i;
+					temp[1] = j;
+					BlackQueensLocations.add(temp);
 				}
+
 			}
+
 		}
+
 		return BlackQueensLocations;
 	}
 

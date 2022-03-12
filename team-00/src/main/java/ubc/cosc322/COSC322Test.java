@@ -228,7 +228,7 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
-				partial = partial.generatePartialGameTree(board, white, 3, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 3, partial.getRoot());
 
 				// Make move decision
 				System.out.println("Board before move:");
@@ -261,6 +261,9 @@ public class COSC322Test extends GamePlayer {
 						moveToMake = node.getBoard();
 					}
 				}
+				
+				System.out.println("Minimax decision");
+				moveToMake.printBoard();
 
 				// System.out.println("Minimax decision: ");
 				// moveToMake.printBoard();

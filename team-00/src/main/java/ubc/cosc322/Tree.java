@@ -24,10 +24,10 @@ public class Tree {
 		this.root = node;
 	}
 
-	public Tree generatePartialGameTree(Board curr, boolean white, int depth, Node root) {
+	public void generatePartialGameTree(Board curr, boolean white, int depth, Node root) {
 		Tree partial = new Tree();
 		if (depth == 0) {
-			return partial;
+			return;
 		}
 		// if you are white generate your potential moves and then move on to generating
 		// blacks potentital moves
@@ -89,8 +89,12 @@ public class Tree {
 
 				}
 			}
+			int count = 0;
 			for (Node child : root.getChildren()) {
-				return this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
+				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
+				count++;
+				if (count > 5)
+					break;
 			}
 
 		} else {
@@ -151,12 +155,16 @@ public class Tree {
 
 				}
 			}
+			int count = 0;
 			for (Node child : root.getChildren()) {
-				return this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
+				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
+				count++;
+				if (count > 5)
+					break;
 			}
 
 		}
-		return partial;
+
 	}
 
 	class Node {
@@ -210,8 +218,6 @@ public class Tree {
 		public void setParent(Node node) {
 			this.parent = node;
 		}
-
-	
 
 		public int childrenCount() {
 			int count = 0;
