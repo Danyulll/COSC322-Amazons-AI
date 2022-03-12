@@ -10,7 +10,7 @@ public class Tree {
 
 	// Constructors
 	public Tree() {
-		this.root = new Node(null, 0);
+		this.root = new Node(null);
 	}
 
 	// Getters
@@ -19,64 +19,51 @@ public class Tree {
 	}
 
 	// Methods
-	public void insert(int value) {
-		if (this.root.getValue() == 0) // temp value while we work with integers
-			this.root.setValue(value);
-		else
-			this.root.getParent().add(value);
+
+	public void setRoot(Node node) {
+		this.root = node;
 	}
 
-	public Tree generatePartialGameTree(Board curr, boolean white) {
+	public Tree generatePartialGameTree(Board curr, boolean white, int depth, Node root) {
 		Tree partial = new Tree();
-
-		// generate moves for white
+		if (depth == 0) {
+			return partial;
+		}
+		// if you are white generate your potential moves and then move on to generating
+		// blacks potentital moves
 		if (white) {
-			// get queen
-			// TerritoryHeuristic getQueens = new TerritoryHeuristic();
-			// ArrayList<int[]> whiteQueenLocs = getQueens.WhiteQueenLocations(curr.board);
-			ArrayList<int[]> whiteQueenLocs = new ArrayList<>();
-			for (int i = 0; i < curr.board.length; i++) {
-				for (int j = 0; j < curr.board.length; j++) {
-					if (curr.board[i][j] == 1) {
-						int[] temp = new int[2];
-						temp[0] = i;
-						temp[1] = j;
-						whiteQueenLocs.add(temp);
-					}
-				}
-			}
-
+			// get the white queens
+			TerritoryHeuristic getQueens = new TerritoryHeuristic();
+			ArrayList<int[]> whiteQueenLocs = getQueens.WhiteQueenLocations(curr.board);
+			// for all four white queens generate their potential moves by adding their
+			// nodes into the array list of the parent
 			for (int i = 0; i < 4; i++) {
+				// select your queen
 				Queen Queen = new Queen(new Position(whiteQueenLocs.get(i)[0], whiteQueenLocs.get(i)[1]));
-				/*
-				 * System.out.println("Queen1: " + whiteQueenLocs.get(0)[0] + "," +
-				 * whiteQueenLocs.get(0)[1] + "\n" + "Queen2: " + whiteQueenLocs.get(1)[0] + ","
-				 * + whiteQueenLocs.get(1)[1] + "\n" + "Queen3: " + whiteQueenLocs.get(2)[0] +
-				 * "," + whiteQueenLocs.get(2)[1] + "\n" + "Queen4: " + whiteQueenLocs.get(3)[0]
-				 * + "," + whiteQueenLocs.get(3)[1] + "\n");
-				 */
+				// construct legal move generator
 				LegalMove moveGetter = new LegalMove();
+				// get all the ways the queen can move
 				ArrayList<Position> movesQueen = moveGetter.getLegalMove(Queen, curr);
+				// for every possible move a queen make generate its possible arrow shots
 				for (Position position : movesQueen) {
-					// remove new Queen(position) from curr and generate arrow moves off of this
-					Board boardForArrowGeneration = (Board) curr.clone();
-					ArrayList<Integer> currentQueenForUpdatingArrowBoard = new ArrayList<>();
-					ArrayList<Integer> newQueenForUpdatingArrowBoard = new ArrayList<>();
-					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrX());
-					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrY());
-					newQueenForUpdatingArrowBoard.add(position.getX());
-					newQueenForUpdatingArrowBoard.add(position.getY());
-					boardForArrowGeneration.updateGameBoard(boardForArrowGeneration, currentQueenForUpdatingArrowBoard,
-							newQueenForUpdatingArrowBoard, false);
-					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position),
-							boardForArrowGeneration);
+					// get possible arrow shots for each queen position
+
+					// TODO right now the possible arrow moves are found using the board where the
+					// queen hasn't moved. This means the tree won't have a state for when a queen
+					// moves and shoots an arrow where it just was
+
+					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position), curr);
+
+					// for each possible arrow shot and queen position make a node with the
+					// corresponding state and add it to the tree
 
 					for (Position position2 : arrowMoves) {
-
+						// make arrays to hold coordinates
 						ArrayList<Integer> QueenPosCur = new ArrayList<>();
 						ArrayList<Integer> QueenPosNew = new ArrayList<>();
 						ArrayList<Integer> ArrowPos = new ArrayList<>();
 
+						// add coordinates
 						QueenPosCur.add(Queen.getQueenCurrX());
 						QueenPosCur.add(Queen.getQueenCurrY());
 
@@ -86,70 +73,59 @@ public class Tree {
 						ArrowPos.add(position2.getX());
 						ArrowPos.add(position2.getY());
 
+						// create game state
 						Board tempBoard = (Board) curr.clone();
-
 						tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
 
-						Node tempNode = new Node(this.root, 0);
+						// create temp node that will be added to tree
+						Node tempNode = new Node(root);
+
+						// set the game state for the board
 						tempNode.setBoard(tempBoard);
-						partial.root.addChild(tempNode);
 
+						// add this node to the tree
+						root.getChildren().add(tempNode);
 					}
 
 				}
-
+			}
+			for (Node child : root.getChildren()) {
+				return this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 			}
 
-		} else { // generate moves for black
-			// get queen
-			// TerritoryHeuristic getQueens = new TerritoryHeuristic();
-			// ArrayList<int[]> blackQueenLocs = getQueens.BlackQueenLocations(curr.board);
-			//TODO convert this to use Rickys Queen locator method
-			ArrayList<int[]> blackQueenLocs = new ArrayList<>();
-			for (int i = 0; i < curr.board.length; i++) {
-				for (int j = 0; j < curr.board.length; j++) {
-					if (curr.board[i][j] == 2) {
-						int[] temp = new int[2];
-						temp[0] = i;
-						temp[1] = j;
-						blackQueenLocs.add(temp);
-					}
-				}
-			}
-
+		} else {
+			// get the black queens
+			TerritoryHeuristic getQueens = new TerritoryHeuristic();
+			ArrayList<int[]> blackQueenLocs = getQueens.BlackQueenLocations(curr.board);
+			// for all four black queens generate their potential moves by adding their
+			// nodes into the array list of the parent
 			for (int i = 0; i < 4; i++) {
+				// select your queen
 				Queen Queen = new Queen(new Position(blackQueenLocs.get(i)[0], blackQueenLocs.get(i)[1]));
-				/*
-				 * System.out.println("Queen1: " + whiteQueenLocs.get(0)[0] + "," +
-				 * whiteQueenLocs.get(0)[1] + "\n" + "Queen2: " + whiteQueenLocs.get(1)[0] + ","
-				 * + whiteQueenLocs.get(1)[1] + "\n" + "Queen3: " + whiteQueenLocs.get(2)[0] +
-				 * "," + whiteQueenLocs.get(2)[1] + "\n" + "Queen4: " + whiteQueenLocs.get(3)[0]
-				 * + "," + whiteQueenLocs.get(3)[1] + "\n");
-				 */
+				// construct legal move generator
 				LegalMove moveGetter = new LegalMove();
+				// get all the ways the queen can move
 				ArrayList<Position> movesQueen = moveGetter.getLegalMove(Queen, curr);
+				// for every possible move a queen make generate its possible arrow shots
 				for (Position position : movesQueen) {
-					// remove new Queen(position) from curr and generate arrow moves off of this
-					/*Board boardForArrowGeneration = (Board) curr.clone();
-					boardForArrowGeneration.board[Queen.getQueenCurrX()][Queen.getQueenCurrY()] = 0;
-					ArrayList<Integer> currentQueenForUpdatingArrowBoard = new ArrayList<>();
-					ArrayList<Integer> newQueenForUpdatingArrowBoard = new ArrayList<>();
-					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrX());
-					currentQueenForUpdatingArrowBoard.add(Queen.getQueenCurrY());
-					newQueenForUpdatingArrowBoard.add(position.getX());
-					newQueenForUpdatingArrowBoard.add(position.getY());
-					boardForArrowGeneration.updateGameBoard(boardForArrowGeneration, currentQueenForUpdatingArrowBoard,
-							newQueenForUpdatingArrowBoard, false);
-				*/
-					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position),
-							curr);
+					// get possible arrow shots for each queen position
+
+					// TODO right now the possible arrow moves are found using the board where the
+					// queen hasn't moved. This means the tree won't have a state for when a queen
+					// moves and shoots an arrow where it just was
+
+					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position), curr);
+
+					// for each possible arrow shot and queen position make a node with the
+					// corresponding state and add it to the tree
 
 					for (Position position2 : arrowMoves) {
-
+						// make arrays to hold coordinates
 						ArrayList<Integer> QueenPosCur = new ArrayList<>();
 						ArrayList<Integer> QueenPosNew = new ArrayList<>();
 						ArrayList<Integer> ArrowPos = new ArrayList<>();
 
+						// add coordinates
 						QueenPosCur.add(Queen.getQueenCurrX());
 						QueenPosCur.add(Queen.getQueenCurrY());
 
@@ -159,91 +135,92 @@ public class Tree {
 						ArrowPos.add(position2.getX());
 						ArrowPos.add(position2.getY());
 
+						// create game state
 						Board tempBoard = (Board) curr.clone();
-
 						tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
 
-						Node tempNode = new Node(this.root, 0);
-						tempNode.setBoard(tempBoard);
-						TerritoryHeuristic heur = new TerritoryHeuristic();
-						tempNode.setValue((int )heur.value(tempNode.getBoard()));
-						partial.root.addChild(tempNode);
+						// create temp node that will be added to tree
+						Node tempNode = new Node(root);
 
+						// set the game state for the board
+						tempNode.setBoard(tempBoard);
+
+						// add this node to the tree
+						root.getChildren().add(tempNode);
 					}
 
 				}
-
 			}
+			for (Node child : root.getChildren()) {
+				return this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
+			}
+
 		}
 		return partial;
 	}
 
-}
+	class Node {
 
-class Node {
+		// Attributes
+		private ArrayList<Node> children;
+		private Node parent;
+		double value;
+		private Board board;
 
-	// Attributes
-	private ArrayList<Node> children;
-	private Node parent;
-	private int value;
-	private Board board;
+		// Constructors
+		public Node(Node parent) {
 
-	// Constructors
-	public Node(Node parent, int value) {
-		TerritoryHeuristic heur = new TerritoryHeuristic();
-		this.parent = parent;
-		this.value = value;
-		this.children = new ArrayList<Node>();
-		this.board = new Board();
-		this.value = (int) heur.value(board);
+			this.parent = parent;
+			// this.value = value;
+			this.children = new ArrayList<Node>();
+			this.board = new Board();
+
+		}
+
+		// Getters
+		public Node getParent() {
+			return this.parent;
+		}
+
+		public double getValue() {
+			return this.value;
+		}
+
+		public Board getBoard() {
+			return this.board;
+		}
+
+		public ArrayList<Node> getChildren() {
+			return this.children;
+		}
+
+		// Setters
+		public void setValue(double value) {
+			this.value = value;
+		}
+
+		public void setBoard(Board board) {
+			this.board = board;
+		}
+
+		public void addChild(Node node) {
+			this.children.add(node);
+		}
+
+		public void setParent(Node node) {
+			this.parent = node;
+		}
+
+	
+
+		public int childrenCount() {
+			int count = 0;
+			for (int i = 0; i < this.children.size(); i++)
+				if (this.children.get(i) != null)
+					count++;
+
+			return count;
+		}
+
 	}
-
-	// Getters
-	public Node getParent() {
-		return this.parent;
-	}
-
-	public int getValue() {
-		return this.value;
-	}
-
-	public Board getBoard() {
-		return this.board;
-	}
-
-	public ArrayList<Node> getChildren() {
-		return this.children;
-	}
-
-	// Setters
-	public void setValue(int value) {
-		this.value = value;
-	}
-
-	public void setBoard(Board board) {
-		this.board = board;
-	}
-
-	public void addChild(Node node) {
-		this.children.add(node);
-	}
-	public void setParent(Node node) {
-		this.parent = node;
-	}
-
-	// Methods
-	public void add(int value) {
-		if (this.children != null)
-			this.children.add(new Node(this, value));
-	}
-
-	public int childrenCount() {
-		int count = 0;
-		for (int i = 0; i < this.children.size(); i++)
-			if (this.children.get(i) != null)
-				count++;
-
-		return count;
-	}
-
 }

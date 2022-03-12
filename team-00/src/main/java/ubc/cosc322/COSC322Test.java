@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import sfs2x.client.entities.Room;
+import ubc.cosc322.Tree.Node;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
@@ -142,7 +143,7 @@ public class COSC322Test extends GamePlayer {
 				// Construct initial Game tree (broken for white player)
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
-				partial = partial.generatePartialGameTree(board, white);
+				//partial = partial.generatePartialGameTree();
 
 				// Make move decision (chooses random move currently sometimes select move out
 				// of range)
@@ -226,10 +227,8 @@ public class COSC322Test extends GamePlayer {
 				// Construct initial Game tree
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
-				// TODO currently partial tree generation only works for the black player and
-				// generates 1 ply. Need to add white player support and fix move generation
-				// once livia has finished the arrow move generation method
-				partial = partial.generatePartialGameTree(board, white);
+				partial.getRoot().setBoard(boardBeforeMove);
+				partial = partial.generatePartialGameTree(board, white, 3, partial.getRoot());
 
 				// Make move decision
 				System.out.println("Board before move:");
@@ -250,15 +249,21 @@ public class COSC322Test extends GamePlayer {
 
 				// TerritoryHeuristic heur = new TerritoryHeuristic();
 				// heur.printHeuristic(heur.closestQueen(board));
-				
-				//for (int i = 0; i < 1000; i++) {
-					//System.out.println(partial.getRoot().getChildren().get(i).getValue());
-				//}
-				Board moveToMake = minimax(partial.getRoot(), 1, false).getBoard(); // min player is false
-				
-				
-				System.out.println("Minimax decision: ");
-				moveToMake.printBoard();
+
+				// for (int i = 0; i < 1000; i++) {
+				// System.out.println(partial.getRoot().getChildren().get(i).getValue());
+				// }
+				double minimax = minimax(partial.getRoot(), 3, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+						white);
+				Board moveToMake = new Board();
+				for (Node node : partial.getRoot().getChildren()) {
+					if (minimax == node.getValue()) {
+						moveToMake = node.getBoard();
+					}
+				}
+
+				// System.out.println("Minimax decision: ");
+				// moveToMake.printBoard();
 
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
@@ -376,49 +381,40 @@ public class COSC322Test extends GamePlayer {
 
 	}
 
-	public Node minimax(Node current, int depth, boolean maxPlayer) {
-		//Node parent = current.getParent();
+	public double minimax(Node current, int depth, double alpha, double beta, boolean maxPlayer) {
+		// Node parent = current.getParent();
 
 		if (depth == 0) {
-			return current;
-		} else {
-			if (maxPlayer) {
-				Node parent = current.getParent();
-				int maxVal = -10000;
-				Node max = new Node(null, -100000);
-				for (int i = 0; i < current.getChildren().size(); i++) {
-					current = minimax(current.getChildren().get(i), depth - 1, false);
-					Board board = current.getBoard();
-					int val = current.getValue();
-					if (val > maxVal) {
-						max.setParent(parent);
-						max.setBoard(board);
-						max.setValue(val);
-						
-
-					}
-
-				}
-				return max;
-			} else {
-				Node parent = current.getParent();
-				int minVal = 10000;
-				Node min = new Node(null, 10000);
-				for (int i = 0; i < current.getChildren().size(); i++) {
-					current = minimax(current.getChildren().get(i), depth - 1, true);
-					Board board = current.getBoard();
-					int val = current.getValue();
-					if (val < minVal) {
-						min.setParent(parent);
-						min.setBoard(board);
-						min.setValue(val);
-					}
-
-				}
-				return min;
-			}
-
+			TerritoryHeuristic heur = new TerritoryHeuristic();
+			return heur.value(current.getBoard());
 		}
+		if (maxPlayer) {
+			double maxEval = Double.NEGATIVE_INFINITY;
+			for (int i = 0; i < current.getChildren().size(); i++) {
+				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, false);
+				maxEval = Math.max(maxEval, eval);
+				alpha = Math.max(alpha, eval);
+				if (beta <= alpha) {
+					break;
+				}
+			}
+			current.setValue(maxEval);
+			return maxEval;
+		} else {
+			double minEval = Double.POSITIVE_INFINITY;
+			for (int i = 0; i < current.getChildren().size(); i++) {
+				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, true);
+				minEval = Math.min(minEval, eval);
+				beta = Math.min(beta, eval);
+				if (beta <= alpha) {
+					break;
+				}
+
+			}
+			current.setValue(minEval);
+			return minEval;
+		}
+
 	}
 
 	public double value(Board board) {
