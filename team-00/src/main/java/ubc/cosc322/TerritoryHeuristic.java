@@ -111,4 +111,20 @@ public class TerritoryHeuristic {
 		System.out.println("**********");
 	}
 
+	public double value(Board board) {
+		TerritoryHeuristic heur = new TerritoryHeuristic();
+		int[][] scoreBoard = heur.closestQueen(board);
+
+		double sum = 0;
+		for (int i = 0; i < scoreBoard.length; i++) {
+			for (int j = 0; j < scoreBoard[i].length; j++) {
+				if (scoreBoard[i][j] == 1) {
+					sum += 1;
+				} else if (scoreBoard[i][j] == 2) {
+					sum -= 1;
+				}
+			}
+		}
+		return sum;
+	}
 }

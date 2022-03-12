@@ -104,6 +104,7 @@ public class Tree {
 			// get queen
 			// TerritoryHeuristic getQueens = new TerritoryHeuristic();
 			// ArrayList<int[]> blackQueenLocs = getQueens.BlackQueenLocations(curr.board);
+			//TODO convert this to use Rickys Queen locator method
 			ArrayList<int[]> blackQueenLocs = new ArrayList<>();
 			for (int i = 0; i < curr.board.length; i++) {
 				for (int j = 0; j < curr.board.length; j++) {
@@ -164,6 +165,8 @@ public class Tree {
 
 						Node tempNode = new Node(this.root, 0);
 						tempNode.setBoard(tempBoard);
+						TerritoryHeuristic heur = new TerritoryHeuristic();
+						tempNode.setValue((int )heur.value(tempNode.getBoard()));
 						partial.root.addChild(tempNode);
 
 					}
@@ -187,9 +190,12 @@ class Node {
 
 	// Constructors
 	public Node(Node parent, int value) {
+		TerritoryHeuristic heur = new TerritoryHeuristic();
 		this.parent = parent;
 		this.value = value;
 		this.children = new ArrayList<Node>();
+		this.board = new Board();
+		this.value = (int) heur.value(board);
 	}
 
 	// Getters
@@ -220,6 +226,9 @@ class Node {
 
 	public void addChild(Node node) {
 		this.children.add(node);
+	}
+	public void setParent(Node node) {
+		this.parent = node;
 	}
 
 	// Methods

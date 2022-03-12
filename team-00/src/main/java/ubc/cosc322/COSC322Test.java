@@ -114,14 +114,16 @@ public class COSC322Test extends GamePlayer {
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
 
-		
 			// Figure out who is player 1
 			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
 
 			// If we are player one make a move
-			if (white) {
+			if (white) { // TODO for white we should not have to receive a move to calcualte our move
+							// however currently the match does not start when 2 AI's sit in a room so we
+							// are temporarily receiving the enemy move
 				this.gamegui.updateGameState(msgDetails);
-				// wait to receive move
+
+				// wait to receive move (temp solution, we shouldn't have to do this)
 				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.QUEEN_POS_CURR);
 				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
@@ -137,20 +139,23 @@ public class COSC322Test extends GamePlayer {
 				Board boardBeforeMove = (Board) board.clone();
 				boardBeforeMove.printBoard();
 
-				// Construct initial Game tree
+				// Construct initial Game tree (broken for white player)
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
 				partial = partial.generatePartialGameTree(board, white);
-				// System.out.println("Selecting Board");
-				// Make move decision
+
+				// Make move decision (chooses random move currently sometimes select move out
+				// of range)
 				System.out.println("Board before move:");
 				boardBeforeMove.printBoard();
 				Board moveToMake = partial.getRoot().getChildren()
 						.get((int) (Math.random() * (partial.getRoot().getChildren().size()))).getBoard();
 				System.out.println("Board move chosen:");
 				moveToMake.printBoard();
+
 				// TerritoryHeuristic heur = new TerritoryHeuristic();
 				// heur.printHeuristic(heur.closestQueen(board));
+
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
 				int[] newWhiteQueenCoord = new int[2];
@@ -184,9 +189,11 @@ public class COSC322Test extends GamePlayer {
 				ArrayList<Integer> QueenOld = new ArrayList<>();
 				QueenOld.add(oldWhiteQueenCoord[0]);
 				QueenOld.add(oldWhiteQueenCoord[1]);
+
 				// Convert To sendable coords
 				HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
-				// Send Move
+
+				// Send Move and update GUI
 				ArrayList<Integer> QueenPosCurSend = new ArrayList<>();
 				QueenPosCurSend = gaoTable.get(QueenOld);
 				ArrayList<Integer> QueenPosNewSend = new ArrayList<>();
@@ -197,7 +204,7 @@ public class COSC322Test extends GamePlayer {
 
 				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-			} else if (!white) { // If we are player 2 wait to recieve a move and then make a move
+			} else if (!white) { // If we are player 2 wait to receive a move and then make a move
 				this.gamegui.updateGameState(msgDetails);
 				System.out.println("I am player 2 (black)");
 
@@ -219,16 +226,40 @@ public class COSC322Test extends GamePlayer {
 				// Construct initial Game tree
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
+				// TODO currently partial tree generation only works for the black player and
+				// generates 1 ply. Need to add white player support and fix move generation
+				// once livia has finished the arrow move generation method
 				partial = partial.generatePartialGameTree(board, white);
-				// System.out.println("Selecting Board");
+
 				// Make move decision
 				System.out.println("Board before move:");
 				boardBeforeMove.printBoard();
-				Board moveToMake = partial.getRoot().getChildren().get(/*ThreadLocalRandom.current().nextInt(partial.getRoot().getChildren().size())*/0).getBoard();
-				System.out.println("Board move chosen:");
-				moveToMake.printBoard();
+
+				// TODO currently selects a random state from tree however sometimes the random
+				// number is outside the range, fix this or get minimax working to choose the
+				// move
+
+				// Call minimax here
+
+				// Board moveToMake = partial.getRoot().getChildren()
+				// .get(
+				// *ThreadLocalRandom.current().nextInt(partial.getRoot().getChildren().size())
+				// 0).getBoard();
+				// System.out.println("Board move chosen:");
+				// moveToMake.printBoard();
+
 				// TerritoryHeuristic heur = new TerritoryHeuristic();
 				// heur.printHeuristic(heur.closestQueen(board));
+				
+				//for (int i = 0; i < 1000; i++) {
+					//System.out.println(partial.getRoot().getChildren().get(i).getValue());
+				//}
+				Board moveToMake = minimax(partial.getRoot(), 1, false).getBoard(); // min player is false
+				
+				
+				System.out.println("Minimax decision: ");
+				moveToMake.printBoard();
+
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
 				int[] newWhiteQueenCoord = new int[2];
@@ -343,6 +374,68 @@ public class COSC322Test extends GamePlayer {
 
 		}
 
+	}
+
+	public Node minimax(Node current, int depth, boolean maxPlayer) {
+		//Node parent = current.getParent();
+
+		if (depth == 0) {
+			return current;
+		} else {
+			if (maxPlayer) {
+				Node parent = current.getParent();
+				int maxVal = -10000;
+				Node max = new Node(null, -100000);
+				for (int i = 0; i < current.getChildren().size(); i++) {
+					current = minimax(current.getChildren().get(i), depth - 1, false);
+					Board board = current.getBoard();
+					int val = current.getValue();
+					if (val > maxVal) {
+						max.setParent(parent);
+						max.setBoard(board);
+						max.setValue(val);
+						
+
+					}
+
+				}
+				return max;
+			} else {
+				Node parent = current.getParent();
+				int minVal = 10000;
+				Node min = new Node(null, 10000);
+				for (int i = 0; i < current.getChildren().size(); i++) {
+					current = minimax(current.getChildren().get(i), depth - 1, true);
+					Board board = current.getBoard();
+					int val = current.getValue();
+					if (val < minVal) {
+						min.setParent(parent);
+						min.setBoard(board);
+						min.setValue(val);
+					}
+
+				}
+				return min;
+			}
+
+		}
+	}
+
+	public double value(Board board) {
+		TerritoryHeuristic heur = new TerritoryHeuristic();
+		int[][] scoreBoard = heur.closestQueen(board);
+
+		double sum = 0;
+		for (int i = 0; i < scoreBoard.length; i++) {
+			for (int j = 0; j < scoreBoard[i].length; j++) {
+				if (scoreBoard[i][j] == 1) {
+					sum += 1;
+				} else if (scoreBoard[i][j] == 2) {
+					sum -= 1;
+				}
+			}
+		}
+		return sum;
 	}
 
 }// end of class
