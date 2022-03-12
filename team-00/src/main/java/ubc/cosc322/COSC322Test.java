@@ -228,7 +228,7 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
-				partial.generatePartialGameTree(boardBeforeMove, white, 3, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
 
 				// Make move decision
 				System.out.println("Board before move:");
@@ -253,7 +253,7 @@ public class COSC322Test extends GamePlayer {
 				// for (int i = 0; i < 1000; i++) {
 				// System.out.println(partial.getRoot().getChildren().get(i).getValue());
 				// }
-				double minimax = minimax(partial.getRoot(), 3, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
 						white);
 				Board moveToMake = new Board();
 				for (Node node : partial.getRoot().getChildren()) {
