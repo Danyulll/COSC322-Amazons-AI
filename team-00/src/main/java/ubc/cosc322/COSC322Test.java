@@ -228,43 +228,50 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
+				//TODO game tree lack states where the queen moves and shoots the square it was just on and has states where queens don't move but do shoot
 				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+			
+			
 
 				// Make move decision
 				System.out.println("Board before move:");
 				boardBeforeMove.printBoard();
-
-				// TODO currently selects a random state from tree however sometimes the random
-				// number is outside the range, fix this or get minimax working to choose the
-				// move
-
-				// Call minimax here
-
-				// Board moveToMake = partial.getRoot().getChildren()
-				// .get(
-				// *ThreadLocalRandom.current().nextInt(partial.getRoot().getChildren().size())
-				// 0).getBoard();
-				// System.out.println("Board move chosen:");
-				// moveToMake.printBoard();
-
-				// TerritoryHeuristic heur = new TerritoryHeuristic();
-				// heur.printHeuristic(heur.closestQueen(board));
-
-				// for (int i = 0; i < 1000; i++) {
-				// System.out.println(partial.getRoot().getChildren().get(i).getValue());
-				// }
 				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
 						white);
 				Board moveToMake = new Board();
 				for (Node node : partial.getRoot().getChildren()) {
 					if (minimax == node.getValue()) {
 						moveToMake = node.getBoard();
+						System.out.println("Possible moves");
+						moveToMake.printBoard();
 					}
 				}
 				
 				System.out.println("Minimax decision");
 				moveToMake.printBoard();
-
+				System.out.println("its heuristic board");
+				TerritoryHeuristic heur = new TerritoryHeuristic();
+				heur.printHeuristic(heur.closestQueen(moveToMake));
+				System.out.println("Calculated value of state");
+				System.out.println(heur.value(moveToMake));
+				
+				
+				Board minBoard = new Board();
+				double minValue = Double.POSITIVE_INFINITY;
+				for (Node node : partial.getRoot().getChildren()) {
+				if(node.getValue() < minValue) {
+					minValue = node.getValue();
+					minBoard.board = node.getBoard().board;
+				}
+				}
+				
+				
+				System.out.println("Best option for min calculated by me: ");
+				minBoard.printBoard();
+				System.out.println("its heuristic board");
+				heur.printHeuristic(heur.closestQueen(minBoard));
+				System.out.println("Calculated value of state");
+				System.out.println(heur.value(minBoard));
 				// System.out.println("Minimax decision: ");
 				// moveToMake.printBoard();
 
@@ -398,6 +405,7 @@ public class COSC322Test extends GamePlayer {
 				maxEval = Math.max(maxEval, eval);
 				alpha = Math.max(alpha, eval);
 				if (beta <= alpha) {
+					
 					break;
 				}
 			}
@@ -410,6 +418,7 @@ public class COSC322Test extends GamePlayer {
 				minEval = Math.min(minEval, eval);
 				beta = Math.min(beta, eval);
 				if (beta <= alpha) {
+					
 					break;
 				}
 
