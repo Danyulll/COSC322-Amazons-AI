@@ -114,17 +114,14 @@ public class COSC322Test extends GamePlayer {
 
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
-
-			// Figure out who is player 1
 			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
-
 			// If we are player one make a move
 			if (white) { // TODO for white we should not have to receive a move to calcualte our move
 							// however currently the match does not start when 2 AI's sit in a room so we
 							// are temporarily receiving the enemy move
 				this.gamegui.updateGameState(msgDetails);
 
-				// wait to receive move (temp solution, we shouldn't have to do this)
+				// recieve black's move
 				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.QUEEN_POS_CURR);
 				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
@@ -133,8 +130,6 @@ public class COSC322Test extends GamePlayer {
 				this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, true);
 
 				System.out.println("I am player one (white)");
-				System.out.println("Currently tracked Board: ");
-				this.board.printBoard();
 
 				System.out.println("Cloned Board");
 				Board boardBeforeMove = (Board) board.clone();
@@ -143,19 +138,32 @@ public class COSC322Test extends GamePlayer {
 				// Construct initial Game tree (broken for white player)
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
-				//partial = partial.generatePartialGameTree();
+				// partial = partial.generatePartialGameTree();
 
-				// Make move decision (chooses random move currently sometimes select move out
-				// of range)
+				// TODO game tree lack states where the queen moves and shoots the square it was
+				// just on and has states where queens don't move but do shoot
+				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+
+				// Make move decision
 				System.out.println("Board before move:");
 				boardBeforeMove.printBoard();
-				Board moveToMake = partial.getRoot().getChildren()
-						.get((int) (Math.random() * (partial.getRoot().getChildren().size()))).getBoard();
-				System.out.println("Board move chosen:");
-				moveToMake.printBoard();
+				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+						white);
+				Board moveToMake = new Board();
+				for (Node node : partial.getRoot().getChildren()) {
+					if (minimax == node.getValue()) {
+						moveToMake = node.getBoard();
 
-				// TerritoryHeuristic heur = new TerritoryHeuristic();
-				// heur.printHeuristic(heur.closestQueen(board));
+					}
+				}
+
+				System.out.println("Minimax decision");
+				moveToMake.printBoard();
+				System.out.println("its heuristic board");
+				TerritoryHeuristic heur = new TerritoryHeuristic();
+				heur.printHeuristic(heur.closestQueen(moveToMake));
+				System.out.println("Calculated value of state");
+				System.out.println(heur.value(moveToMake));
 
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
@@ -201,6 +209,7 @@ public class COSC322Test extends GamePlayer {
 				QueenPosNewSend = gaoTable.get(QueenNew);
 				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
 				ArrowPosSend = gaoTable.get(Arrow);
+
 				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 
 				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
@@ -228,10 +237,9 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("Constructing tree");
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
-				//TODO game tree lack states where the queen moves and shoots the square it was just on and has states where queens don't move but do shoot
+				// TODO game tree lack states where the queen moves and shoots the square it was
+				// just on and has states where queens don't move but do shoot
 				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
-			
-			
 
 				// Make move decision
 				System.out.println("Board before move:");
@@ -242,11 +250,10 @@ public class COSC322Test extends GamePlayer {
 				for (Node node : partial.getRoot().getChildren()) {
 					if (minimax == node.getValue()) {
 						moveToMake = node.getBoard();
-						System.out.println("Possible moves");
-						moveToMake.printBoard();
+
 					}
 				}
-				
+
 				System.out.println("Minimax decision");
 				moveToMake.printBoard();
 				System.out.println("its heuristic board");
@@ -254,26 +261,6 @@ public class COSC322Test extends GamePlayer {
 				heur.printHeuristic(heur.closestQueen(moveToMake));
 				System.out.println("Calculated value of state");
 				System.out.println(heur.value(moveToMake));
-				
-				
-				Board minBoard = new Board();
-				double minValue = Double.POSITIVE_INFINITY;
-				for (Node node : partial.getRoot().getChildren()) {
-				if(node.getValue() < minValue) {
-					minValue = node.getValue();
-					minBoard.board = node.getBoard().board;
-				}
-				}
-				
-				
-				System.out.println("Best option for min calculated by me: ");
-				minBoard.printBoard();
-				System.out.println("its heuristic board");
-				heur.printHeuristic(heur.closestQueen(minBoard));
-				System.out.println("Calculated value of state");
-				System.out.println(heur.value(minBoard));
-				// System.out.println("Minimax decision: ");
-				// moveToMake.printBoard();
 
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
@@ -338,7 +325,83 @@ public class COSC322Test extends GamePlayer {
 			break;
 
 		case GameMessage.GAME_ACTION_START:
+//TODO send initial move in this case
+			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
+			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
+			// Figure out who is player 1
+			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
 
+			if (white) {
+				this.board = new Board();
+				Tree partial = new Tree();
+				partial.generatePartialGameTree(this.board, white, 2, partial.getRoot());
+				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
+						white);
+				Board moveToMake = new Board();
+				for (Node node : partial.getRoot().getChildren()) {
+					if (minimax == node.getValue()) {
+						moveToMake = node.getBoard();
+
+					}
+				}
+
+				// Get Move Coords
+				int[] oldWhiteQueenCoord = new int[2];
+				int[] newWhiteQueenCoord = new int[2];
+				int[] newArrowcoord = new int[2];
+
+				for (int i = 0; i < boardBeforeMove.board.length; i++) {
+					for (int j = 0; j < boardBeforeMove.board.length; j++) {
+						if (moveToMake.board[i][j] != boardBeforeMove.board[i][j]) {
+							if (moveToMake.board[i][j] == 3 && boardBeforeMove.board[i][j] != 3) {
+								newArrowcoord[0] = i;
+								newArrowcoord[1] = j;
+							}
+							if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 2) {
+								newWhiteQueenCoord[0] = i;
+								newWhiteQueenCoord[1] = j;
+							}
+
+							if (moveToMake.board[i][j] == 0 && boardBeforeMove.board[i][j] == 2) {
+								oldWhiteQueenCoord[0] = i;
+								oldWhiteQueenCoord[1] = j;
+							}
+						}
+					}
+				}
+				ArrayList<Integer> QueenNew = new ArrayList<Integer>();
+				QueenNew.add(newWhiteQueenCoord[0]);
+				QueenNew.add(newWhiteQueenCoord[1]);
+				ArrayList<Integer> Arrow = new ArrayList<Integer>();
+				Arrow.add(newArrowcoord[0]);
+				Arrow.add(newArrowcoord[1]);
+				ArrayList<Integer> QueenOld = new ArrayList<>();
+				QueenOld.add(oldWhiteQueenCoord[0]);
+				QueenOld.add(oldWhiteQueenCoord[1]);
+				System.out.println("oldWhiteQueenCoord Array: " + oldWhiteQueenCoord[0] + "," + oldWhiteQueenCoord[1]);
+				System.out.println("newWhiteQueenCoord Array: " + newWhiteQueenCoord[0] + "," + newWhiteQueenCoord[1]);
+				System.out.println("newArrowcoord Array: " + newArrowcoord[0] + "," + newArrowcoord[1]);
+
+				// Convert Coords for move to send
+				HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
+				ArrayList<Integer> QueenPosCurSend = new ArrayList<>();
+				QueenPosCurSend = gaoTable.get(QueenOld);
+				ArrayList<Integer> QueenPosNewSend = new ArrayList<>();
+				QueenPosNewSend = gaoTable.get(QueenNew);
+				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
+				ArrowPosSend = gaoTable.get(Arrow);
+
+				// send game move and update gui
+				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
+				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+				System.out.println(
+						"Current Queen Position being sent: " + QueenPosCurSend.get(0) + "," + QueenPosCurSend.get(1));
+				System.out.println(
+						"Neww Queen Position being sent: " + QueenPosNewSend.get(0) + "," + QueenPosNewSend.get(1));
+				System.out.println("New Arrow being sent: " + ArrowPosSend.get(0) + "," + ArrowPosSend.get(1));
+
+			}
 			// Print names of players and what color they are
 
 			// System.out.println("case action start");
@@ -347,8 +410,6 @@ public class COSC322Test extends GamePlayer {
 			// System.out.println(AmazonsGameMessage.PLAYER_BLACK);
 			// System.out.println(AmazonsGameMessage.PLAYER_WHITE);
 
-			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
-			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 		default:
 			break;
 		}
@@ -404,10 +465,11 @@ public class COSC322Test extends GamePlayer {
 				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, false);
 				maxEval = Math.max(maxEval, eval);
 				alpha = Math.max(alpha, eval);
-				if (beta <= alpha) {
-					
-					break;
-				}
+				/*
+				 * if (beta <= alpha) {
+				 * 
+				 * break; }
+				 */
 			}
 			current.setValue(maxEval);
 			return maxEval;
@@ -417,10 +479,11 @@ public class COSC322Test extends GamePlayer {
 				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, true);
 				minEval = Math.min(minEval, eval);
 				beta = Math.min(beta, eval);
-				if (beta <= alpha) {
-					
-					break;
-				}
+				/*
+				 * if (beta <= alpha) {
+				 * 
+				 * break; }
+				 */
 
 			}
 			current.setValue(minEval);
