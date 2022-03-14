@@ -329,7 +329,7 @@ public class COSC322Test extends GamePlayer {
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 			// Figure out who is player 1
-			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
+			 white = (this.whiteUser.equals(this.userName)) ? true : false;
 
 			if (white) {
 				this.board = new Board();
@@ -344,6 +344,7 @@ public class COSC322Test extends GamePlayer {
 
 					}
 				}
+				Board boardBeforeMove = (Board )this.board.clone();
 
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
