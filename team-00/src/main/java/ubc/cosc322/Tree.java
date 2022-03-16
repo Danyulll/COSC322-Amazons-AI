@@ -53,7 +53,9 @@ public class Tree {
 					// queen hasn't moved. This means the tree won't have a state for when a queen
 					// moves and shoots an arrow where it just was
 					LegalArrow arrowGetter = new LegalArrow();
-					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), curr);
+					Board temp = (Board) curr.clone();
+					temp.updateGameBoard(temp, Queen.getQueenCurr(), position.getXY(), false);
+					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), temp);
 					
 					// for each possible arrow shot and queen position make a node with the
 					// corresponding state and add it to the tree
@@ -73,7 +75,16 @@ public class Tree {
 
 						ArrowPos.add(position2.getX());
 						ArrowPos.add(position2.getY());
-
+						if(ArrowPos.get(0)== QueenPosNew.get(0) && ArrowPos.get(1) == QueenPosNew.get(1)) {
+						
+							continue;
+							
+						}
+						
+						if(QueenPosNew.get(0)==QueenPosCur.get(0) && QueenPosNew.get(1)==QueenPosCur.get(1)) {
+						
+							continue;
+						}
 						// create game state
 						Board tempBoard = (Board) curr.clone();
 						tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
@@ -94,7 +105,7 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 300)
+				if (count > 150)
 					break;
 			}
 
@@ -120,7 +131,10 @@ public class Tree {
 					// moves and shoots an arrow where it just was
 
 					LegalArrow arrowGetter = new LegalArrow();
-					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), curr);
+					Board temp = (Board) curr.clone();
+					temp.updateGameBoard(temp, Queen.getQueenCurr(), position.getXY(), false);
+					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), temp);
+					
 
 					// for each possible arrow shot and queen position make a node with the
 					// corresponding state and add it to the tree
@@ -141,6 +155,13 @@ public class Tree {
 						ArrowPos.add(position2.getX());
 						ArrowPos.add(position2.getY());
 
+						if(ArrowPos.get(0)== Queen.getQueenCurrX() && ArrowPos.get(1) == Queen.getQueenCurrY()) {
+							continue;
+						}
+						
+						if(QueenPosNew.get(0)==QueenPosCur.get(0) && QueenPosNew.get(1)==QueenPosCur.get(1)) {
+							continue;
+						}
 						// create game state
 						Board tempBoard = (Board) curr.clone();
 						tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
@@ -161,7 +182,7 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 300)
+				if (count > 150)
 					break;
 			}
 

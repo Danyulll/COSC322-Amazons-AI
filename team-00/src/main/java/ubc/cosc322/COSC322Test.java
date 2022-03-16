@@ -115,11 +115,13 @@ public class COSC322Test extends GamePlayer {
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
 			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
+			System.out.println("initally updating game gui");
+			this.gamegui.updateGameState(msgDetails);
 			// If we are player one make a move
 			if (white) { // TODO for white we should not have to receive a move to calcualte our move
 							// however currently the match does not start when 2 AI's sit in a room so we
 							// are temporarily receiving the enemy move
-				this.gamegui.updateGameState(msgDetails);
+				
 
 				// recieve black's move
 				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
@@ -149,6 +151,10 @@ public class COSC322Test extends GamePlayer {
 				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
 						white);
 				Board moveToMake = new Board();
+				if(partial.getRoot().getChildren().size()==0) {
+					System.out.println("I am out of moves");
+					break;
+				}
 				for (Node node : partial.getRoot().getChildren()) {
 					if (minimax == node.getValue()) {
 						moveToMake = node.getBoard();
@@ -201,13 +207,15 @@ public class COSC322Test extends GamePlayer {
 				QueenPosNewSend = gaoTable.get(QueenNew);
 				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
 				ArrowPosSend = gaoTable.get(Arrow);
-
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-
+				System.out.println("updating game gui");
+				
 				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+
+			
 			} else if (!white) { // If we are player 2 wait to receive a move and then make a move
-				this.gamegui.updateGameState(msgDetails);
+			
 				System.out.println("I am player 2 (black)");
 
 				// wait to receive move
@@ -235,8 +243,13 @@ public class COSC322Test extends GamePlayer {
 		
 			
 				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-						white);
+						true);
 				Board moveToMake = new Board();
+				if(partial.getRoot().getChildren().size()==0) {
+					System.out.println("I am out of moves");
+					break;
+				}
+				System.out.println(partial.getRoot().getChildren().size() + " moves left");
 				for (Node node : partial.getRoot().getChildren()) {
 					if (minimax == node.getValue()) {
 						moveToMake = node.getBoard();
@@ -292,14 +305,11 @@ public class COSC322Test extends GamePlayer {
 				ArrowPosSend = gaoTable.get(Arrow);
 
 				// send game move and update gui
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-				System.out.println(
-						"Current Queen Position being sent: " + QueenPosCurSend.get(0) + "," + QueenPosCurSend.get(1));
-				System.out.println(
-						"Neww Queen Position being sent: " + QueenPosNewSend.get(0) + "," + QueenPosNewSend.get(1));
-				System.out.println("New Arrow being sent: " + ArrowPosSend.get(0) + "," + ArrowPosSend.get(1));
+				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+				
+				
 			}
 
 			t = 30;
@@ -317,9 +327,9 @@ public class COSC322Test extends GamePlayer {
 			if (white) {
 				this.board = new Board();
 				Tree partial = new Tree();
-				partial.generatePartialGameTree(this.board, white, 2, partial.getRoot());
+				partial.generatePartialGameTree(this.board, true, 2, partial.getRoot());
 				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-						white);
+						true);
 				Board moveToMake = new Board();
 				for (Node node : partial.getRoot().getChildren()) {
 					if (minimax == node.getValue()) {
@@ -341,12 +351,12 @@ public class COSC322Test extends GamePlayer {
 								newArrowcoord[0] = i;
 								newArrowcoord[1] = j;
 							}
-							if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 2) {
+							if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 1) {
 								newWhiteQueenCoord[0] = i;
 								newWhiteQueenCoord[1] = j;
 							}
 
-							if (moveToMake.board[i][j] == 0 && boardBeforeMove.board[i][j] == 2) {
+							if (moveToMake.board[i][j] == 0 && boardBeforeMove.board[i][j] == 1) {
 								oldWhiteQueenCoord[0] = i;
 								oldWhiteQueenCoord[1] = j;
 							}
@@ -376,9 +386,11 @@ public class COSC322Test extends GamePlayer {
 				ArrowPosSend = gaoTable.get(Arrow);
 
 				// send game move and update gui
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+				
 				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
+				System.out.println("updating game gui");
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
+				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 			
 			}
 			// Print names of players and what color they are
@@ -444,11 +456,11 @@ public class COSC322Test extends GamePlayer {
 				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, false);
 				maxEval = Math.max(maxEval, eval);
 				alpha = Math.max(alpha, eval);
-				/*
-				 * if (beta <= alpha) {
-				 * 
-				 * break; }
-				 */
+				
+				 if (beta <= alpha) {
+				 
+				  break; }
+				 
 			}
 			current.setValue(maxEval);
 			return maxEval;
@@ -458,11 +470,11 @@ public class COSC322Test extends GamePlayer {
 				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, true);
 				minEval = Math.min(minEval, eval);
 				beta = Math.min(beta, eval);
-				/*
-				 * if (beta <= alpha) {
-				 * 
-				 * break; }
-				 */
+				
+				 if (beta <= alpha) {
+				 
+				  break; }
+				 
 
 			}
 			current.setValue(minEval);
