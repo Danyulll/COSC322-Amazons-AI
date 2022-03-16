@@ -37,12 +37,13 @@ public class Tree {
 			ArrayList<int[]> whiteQueenLocs = getQueens.WhiteQueenLocations(curr.board);
 			// for all four white queens generate their potential moves by adding their
 			// nodes into the array list of the parent
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < whiteQueenLocs.size(); i++) {
 				// select your queen
 				Queen Queen = new Queen(new Position(whiteQueenLocs.get(i)[0], whiteQueenLocs.get(i)[1]));
 				// construct legal move generator
 				LegalMove moveGetter = new LegalMove();
 				// get all the ways the queen can move
+				
 				ArrayList<Position> movesQueen = moveGetter.getLegalMove(Queen, curr);
 				// for every possible move a queen make generate its possible arrow shots
 				for (Position position : movesQueen) {
@@ -51,9 +52,9 @@ public class Tree {
 					// TODO right now the possible arrow moves are found using the board where the
 					// queen hasn't moved. This means the tree won't have a state for when a queen
 					// moves and shoots an arrow where it just was
-
-					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position), curr);
-
+					LegalArrow arrowGetter = new LegalArrow();
+					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), curr);
+					
 					// for each possible arrow shot and queen position make a node with the
 					// corresponding state and add it to the tree
 
@@ -93,7 +94,7 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 50)
+				if (count > 300)
 					break;
 			}
 
@@ -103,7 +104,7 @@ public class Tree {
 			ArrayList<int[]> blackQueenLocs = getQueens.BlackQueenLocations(curr.board);
 			// for all four black queens generate their potential moves by adding their
 			// nodes into the array list of the parent
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < blackQueenLocs.size(); i++) {
 				// select your queen
 				Queen Queen = new Queen(new Position(blackQueenLocs.get(i)[0], blackQueenLocs.get(i)[1]));
 				// construct legal move generator
@@ -118,7 +119,8 @@ public class Tree {
 					// queen hasn't moved. This means the tree won't have a state for when a queen
 					// moves and shoots an arrow where it just was
 
-					ArrayList<Position> arrowMoves = moveGetter.getLegalMove(new Queen(position), curr);
+					LegalArrow arrowGetter = new LegalArrow();
+					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), curr);
 
 					// for each possible arrow shot and queen position make a node with the
 					// corresponding state and add it to the tree
@@ -159,7 +161,7 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 50)
+				if (count > 300)
 					break;
 			}
 

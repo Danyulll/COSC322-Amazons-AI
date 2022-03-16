@@ -129,14 +129,14 @@ public class COSC322Test extends GamePlayer {
 				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 				this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, true);
 
-				System.out.println("I am player one (white)");
+			
 
-				System.out.println("Cloned Board");
+		
 				Board boardBeforeMove = (Board) board.clone();
-				boardBeforeMove.printBoard();
+			
 
-				// Construct initial Game tree (broken for white player)
-				System.out.println("Constructing tree");
+			
+		
 				Tree partial = new Tree();
 				// partial = partial.generatePartialGameTree();
 
@@ -145,8 +145,7 @@ public class COSC322Test extends GamePlayer {
 				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
 
 				// Make move decision
-				System.out.println("Board before move:");
-				boardBeforeMove.printBoard();
+		
 				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
 						white);
 				Board moveToMake = new Board();
@@ -157,14 +156,7 @@ public class COSC322Test extends GamePlayer {
 					}
 				}
 
-				System.out.println("Minimax decision");
-				moveToMake.printBoard();
-				System.out.println("its heuristic board");
-				TerritoryHeuristic heur = new TerritoryHeuristic();
-				heur.printHeuristic(heur.closestQueen(moveToMake));
-				System.out.println("Calculated value of state");
-				System.out.println(heur.value(moveToMake));
-
+			
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
 				int[] newWhiteQueenCoord = new int[2];
@@ -226,15 +218,13 @@ public class COSC322Test extends GamePlayer {
 				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 				this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, true);
 
-				System.out.println("Currently tracked Board: ");
-				this.board.printBoard();
 
-				System.out.println("Cloned Board");
+		
 				Board boardBeforeMove = (Board) board.clone();
 				boardBeforeMove.printBoard();
 
 				// Construct initial Game tree
-				System.out.println("Constructing tree");
+			
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
 				// TODO game tree lack states where the queen moves and shoots the square it was
@@ -242,8 +232,8 @@ public class COSC322Test extends GamePlayer {
 				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
 
 				// Make move decision
-				System.out.println("Board before move:");
-				boardBeforeMove.printBoard();
+		
+			
 				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
 						white);
 				Board moveToMake = new Board();
@@ -254,14 +244,7 @@ public class COSC322Test extends GamePlayer {
 					}
 				}
 
-				System.out.println("Minimax decision");
-				moveToMake.printBoard();
-				System.out.println("its heuristic board");
-				TerritoryHeuristic heur = new TerritoryHeuristic();
-				heur.printHeuristic(heur.closestQueen(moveToMake));
-				System.out.println("Calculated value of state");
-				System.out.println(heur.value(moveToMake));
-
+		
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
 				int[] newWhiteQueenCoord = new int[2];
@@ -325,7 +308,7 @@ public class COSC322Test extends GamePlayer {
 			break;
 
 		case GameMessage.GAME_ACTION_START:
-//TODO send initial move in this case
+
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 			// Figure out who is player 1
@@ -396,12 +379,7 @@ public class COSC322Test extends GamePlayer {
 				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-				System.out.println(
-						"Current Queen Position being sent: " + QueenPosCurSend.get(0) + "," + QueenPosCurSend.get(1));
-				System.out.println(
-						"Neww Queen Position being sent: " + QueenPosNewSend.get(0) + "," + QueenPosNewSend.get(1));
-				System.out.println("New Arrow being sent: " + ArrowPosSend.get(0) + "," + ArrowPosSend.get(1));
-
+			
 			}
 			// Print names of players and what color they are
 

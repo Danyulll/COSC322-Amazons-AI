@@ -2,6 +2,10 @@ ubc\cosc322\LegalMove.class
 ubc\cosc322\Board.class
 ubc\cosc322\COSC322Test$countDown.class
 ubc\cosc322\Position.class
+ubc\cosc322\Tree.class
+ubc\cosc322\LegalArrow.class
 ubc\cosc322\COSC322Test.class
 ubc\cosc322\Queen.class
+ubc\cosc322\Tree$Node.class
 ubc\cosc322\COSC322Test$1.class
+ubc\cosc322\TerritoryHeuristic.class
