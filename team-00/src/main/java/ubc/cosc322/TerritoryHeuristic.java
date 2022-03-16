@@ -44,12 +44,13 @@ public class TerritoryHeuristic {
 	}
 
 	public int[][] closestQueen(Board board1) {
-		int[] white, black;
+		return new Board().board;
+		/*int[] white, black;
 		int[][] board = board1.board;
 		double dw = 1000;
 		double db = 1000;
 		int[][] owned = new int[10][10];
-
+		
 		ArrayList<int[]> WqueensLocations = WhiteQueenLocations(board);
 		ArrayList<int[]> BqueensLocations = BlackQueenLocations(board);
 		for (int i = 0; i < board.length; i++) {
@@ -92,7 +93,8 @@ public class TerritoryHeuristic {
 			}
 		}
 		// printHeuristic(owned); // only for testing
-		return owned;
+		//return owned;
+		*/
 	}
 
 	public void printHeuristic(int[][] matrix) {
