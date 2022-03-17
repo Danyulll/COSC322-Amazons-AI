@@ -138,12 +138,13 @@ public class COSC322Test extends GamePlayer {
 				// TODO game tree lack states where the queen moves and shoots the square it was
 				// just on and has states where queens don't move but do shoot
 				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
-				if(partial.getRoot().getChildren().size()==0) {
+				if (partial.getRoot().getChildren().size() == 0) {
 					System.out.println("I am out of moves");
 					break;
 				}
 				Board moveToMake = partial.getRoot().getChildren()
-						.get((int) (1 + Math.random() * partial.getRoot().getChildren().size())).getBoard();
+						.get(Math.max(0, ((int) (1 + Math.random() * partial.getRoot().getChildren().size()))-10))
+						.getBoard();
 				System.out.println("move chosen");
 				moveToMake.printBoard();
 
@@ -249,12 +250,11 @@ public class COSC322Test extends GamePlayer {
 				// TODO game tree lack states where the queen moves and shoots the square it was
 				// just on and has states where queens don't move but do shoot
 				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
-				if(partial.getRoot().getChildren().size()==0) {
+				if (partial.getRoot().getChildren().size() == 0) {
 					System.out.println("I am out of moves");
 					break;
 				}
-				Board moveToMake = partial.getRoot().getChildren()
-						.get((int) (1 + Math.random() * partial.getRoot().getChildren().size())).getBoard();
+				Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
 				System.out.println("move chosen");
 				moveToMake.printBoard();
 

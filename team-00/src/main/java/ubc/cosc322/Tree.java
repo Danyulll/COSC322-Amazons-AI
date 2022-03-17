@@ -43,7 +43,7 @@ public class Tree {
 				// construct legal move generator
 				LegalMove moveGetter = new LegalMove();
 				// get all the ways the queen can move
-				
+
 				ArrayList<Position> movesQueen = moveGetter.getLegalMove(Queen, curr);
 				// for every possible move a queen make generate its possible arrow shots
 				for (Position position : movesQueen) {
@@ -56,7 +56,7 @@ public class Tree {
 					Board temp = (Board) curr.clone();
 					temp.updateGameBoard(temp, Queen.getQueenCurr(), position.getXY(), false);
 					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), temp);
-					
+
 					// for each possible arrow shot and queen position make a node with the
 					// corresponding state and add it to the tree
 
@@ -75,16 +75,7 @@ public class Tree {
 
 						ArrowPos.add(position2.getX());
 						ArrowPos.add(position2.getY());
-						if(ArrowPos.get(0)== QueenPosNew.get(0) && ArrowPos.get(1) == QueenPosNew.get(1)) {
-						
-							continue;
-							
-						}
-						
-						if(QueenPosNew.get(0)==QueenPosCur.get(0) && QueenPosNew.get(1)==QueenPosCur.get(1)) {
-						
-							continue;
-						}
+
 						// create game state
 						Board tempBoard = (Board) curr.clone();
 						tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
@@ -134,7 +125,6 @@ public class Tree {
 					Board temp = (Board) curr.clone();
 					temp.updateGameBoard(temp, Queen.getQueenCurr(), position.getXY(), false);
 					ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(position.getX(), position.getY(), temp);
-					
 
 					// for each possible arrow shot and queen position make a node with the
 					// corresponding state and add it to the tree
@@ -155,13 +145,6 @@ public class Tree {
 						ArrowPos.add(position2.getX());
 						ArrowPos.add(position2.getY());
 
-						if(ArrowPos.get(0)== Queen.getQueenCurrX() && ArrowPos.get(1) == Queen.getQueenCurrY()) {
-							continue;
-						}
-						
-						if(QueenPosNew.get(0)==QueenPosCur.get(0) && QueenPosNew.get(1)==QueenPosCur.get(1)) {
-							continue;
-						}
 						// create game state
 						Board tempBoard = (Board) curr.clone();
 						tempBoard.updateGameBoard(tempBoard, QueenPosCur, QueenPosNew, ArrowPos, false);
