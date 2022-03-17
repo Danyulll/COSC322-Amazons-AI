@@ -68,54 +68,55 @@ public class Board implements Cloneable {
 		if (conversionNeeded) {
 
 			HashMap<ArrayList<Integer>, ArrayList<Integer>> map = this.makeHashTable();
-			int WorB = this.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)];
+			int WorB = current.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)];
 
 			// replace old location of piece with 0
-			this.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)] = 0;
+			current.board[map.get(QueenPosCurEnemey).get(0)][map.get(QueenPosCurEnemey).get(1)] = 0;
 
 			// if moving piece is white put 1 at coord else put 2
-			this.board[map.get(QueenPosNewEnemey).get(0)][map.get(QueenPosNewEnemey).get(1)] = (WorB == 1) ? 1 : 2;
+			current.board[map.get(QueenPosNewEnemey).get(0)][map.get(QueenPosNewEnemey).get(1)] = (WorB == 1) ? 1 : 2;
 
 			// Update arrow location
-			this.board[map.get(ArrowPosEnemey).get(0)][map.get(ArrowPosEnemey).get(1)] = 3;
+			current.board[map.get(ArrowPosEnemey).get(0)][map.get(ArrowPosEnemey).get(1)] = 3;
 		} else {
 			int WorB = this.board[QueenPosCurEnemey.get(0)][QueenPosCurEnemey.get(1)];
 
 			// replace old location of piece with 0
-			this.board[QueenPosCurEnemey.get(0)][QueenPosCurEnemey.get(1)] = 0;
+			current.board[QueenPosCurEnemey.get(0)][QueenPosCurEnemey.get(1)] = 0;
 
 			// if moving piece is white put 1 at coord else put 2
-			this.board[QueenPosNewEnemey.get(0)][QueenPosNewEnemey.get(1)] = (WorB == 1) ? 1 : 2;
+			current.board[QueenPosNewEnemey.get(0)][QueenPosNewEnemey.get(1)] = (WorB == 1) ? 1 : 2;
 
 			// Update arrow location
-			this.board[ArrowPosEnemey.get(0)][ArrowPosEnemey.get(1)] = 3;
+			current.board[ArrowPosEnemey.get(0)][ArrowPosEnemey.get(1)] = 3;
 		}
-		return this;
+		return current;
 	}
-	
-	public Board updateGameBoard(Board boardForArrowGeneration, ArrayList<Integer> QueenCur , ArrayList<Integer> QueenNew, boolean conversionNeeded) {
+
+	public Board updateGameBoard(Board boardForArrowGeneration, ArrayList<Integer> QueenCur,
+			ArrayList<Integer> QueenNew, boolean conversionNeeded) {
 		if (conversionNeeded) {
 
 			HashMap<ArrayList<Integer>, ArrayList<Integer>> map = this.makeHashTable();
-			int WorB = this.board[map.get(QueenCur).get(0)][map.get(QueenCur).get(1)];
+			int WorB = boardForArrowGeneration.board[map.get(QueenCur).get(0)][map.get(QueenCur).get(1)];
 
 			// replace old location of piece with 0
-			this.board[map.get(QueenCur).get(0)][map.get(QueenCur).get(1)] = 0;
+			boardForArrowGeneration.board[map.get(QueenCur).get(0)][map.get(QueenCur).get(1)] = 0;
 
 			// if moving piece is white put 1 at coord else put 2
-			this.board[map.get(QueenNew).get(0)][map.get(QueenNew).get(1)] = (WorB == 1) ? 1 : 2;
+			boardForArrowGeneration.board[map.get(QueenNew).get(0)][map.get(QueenNew).get(1)] = (WorB == 1) ? 1 : 2;
 
 		} else {
-			int WorB = this.board[QueenCur.get(0)][QueenCur.get(1)];
+			int WorB = boardForArrowGeneration.board[QueenCur.get(0)][QueenCur.get(1)];
 
 			// replace old location of piece with 0
-			this.board[QueenCur.get(0)][QueenCur.get(1)] = 0;
+			boardForArrowGeneration.board[QueenCur.get(0)][QueenCur.get(1)] = 0;
 
 			// if moving piece is white put 1 at coord else put 2
-			this.board[QueenNew.get(0)][QueenNew.get(1)] = (WorB == 1) ? 1 : 2;
+			boardForArrowGeneration.board[QueenNew.get(0)][QueenNew.get(1)] = (WorB == 1) ? 1 : 2;
 
 		}
-		return this;
+		return boardForArrowGeneration;
 	}
 
 	public HashMap<ArrayList<Integer>, ArrayList<Integer>> makeHashTable() {
@@ -185,9 +186,9 @@ public class Board implements Cloneable {
 		}
 		return clone;
 	}
-	
+
 	public static HashMap<ArrayList<Integer>, ArrayList<Integer>> makeGaoTable() {
-		HashMap<ArrayList<Integer>,ArrayList<Integer>> gaoTable = new HashMap<>();
+		HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = new HashMap<>();
 		ArrayList<Integer> keys = new ArrayList<>();
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
@@ -196,7 +197,7 @@ public class Board implements Cloneable {
 
 			}
 		}
-		
+
 		ArrayList<Integer> values = new ArrayList<>();
 		for (int row = 10; row > 0; row--) {
 			for (int col = 1; col < 11; col++) {
@@ -205,7 +206,7 @@ public class Board implements Cloneable {
 
 			}
 		}
-		
+
 		int counter = 0, keyIndex = -1, valueIndex = -1;
 		boolean done = false;
 		while (!done) {
@@ -224,7 +225,7 @@ public class Board implements Cloneable {
 			}
 
 		}
-		
+
 		return gaoTable;
 	}
 
