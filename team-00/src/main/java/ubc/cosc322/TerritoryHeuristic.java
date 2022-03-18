@@ -44,25 +44,22 @@ public class TerritoryHeuristic {
 	}
 
 	public int[][] closestQueen(Board board1) {
-		return new Board().board;
-		/*int[] white, black;
+		int[] white, black;
 		int[][] board = board1.board;
 		double dw = 1000;
 		double db = 1000;
 		int[][] owned = new int[10][10];
-		
+
 		ArrayList<int[]> WqueensLocations = WhiteQueenLocations(board);
 		ArrayList<int[]> BqueensLocations = BlackQueenLocations(board);
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
 
 				if (board[i][j] == 0) {
-					white = WqueensLocations.get(0);
-					dw = Math.sqrt(Math.pow(white[0] - i, 2) + Math.pow(white[1] - j, 2));
-					black = BqueensLocations.get(0);
-					db = Math.sqrt(Math.pow(black[0] - i, 2) + Math.pow(black[1] - j, 2));
+					
 
-					for (int q = 1; q < 4; q++) {
+					dw = (int) Double.POSITIVE_INFINITY;
+					for (int q = 0; q < 4; q++) {
 
 						white = WqueensLocations.get(q);
 						double z = Math.sqrt(Math.pow(white[0] - i, 2) + Math.pow(white[1] - j, 2));
@@ -71,7 +68,8 @@ public class TerritoryHeuristic {
 
 						}
 					}
-					for (int q = 1; q < 4; q++) {
+					db = (int) Double.POSITIVE_INFINITY;
+					for (int q = 0; q < 4; q++) {
 
 						black = BqueensLocations.get(q);
 						double z = Math.sqrt(Math.pow(black[0] - i, 2) + Math.pow(black[1] - j, 2));
@@ -93,8 +91,7 @@ public class TerritoryHeuristic {
 			}
 		}
 		// printHeuristic(owned); // only for testing
-		//return owned;
-		*/
+		return owned;
 	}
 
 	public void printHeuristic(int[][] matrix) {

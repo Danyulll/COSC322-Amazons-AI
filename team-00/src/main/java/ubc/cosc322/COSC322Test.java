@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import sfs2x.client.entities.Room;
-import ubc.cosc322.Tree.Node;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
@@ -34,6 +33,7 @@ public class COSC322Test extends GamePlayer {
 	public String whiteUser;
 	public String blackUser;
 	public Board board;
+	public boolean white;
 
 	/**
 	 * The main method
@@ -114,7 +114,7 @@ public class COSC322Test extends GamePlayer {
 
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
-			boolean white = (this.whiteUser.equals(this.userName)) ? true : false;
+			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
 			System.out.println("initally updating game gui");
 			this.gamegui.updateGameState(msgDetails);
 			// If we are player one make a move
@@ -137,29 +137,22 @@ public class COSC322Test extends GamePlayer {
 
 				// TODO game tree lack states where the queen moves and shoots the square it was
 				// just on and has states where queens don't move but do shoot
-				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+				
+				/*
+				 * Board moveToMake = partial.getRoot().getChildren() .get(Math.max(0, ((int) (1
+				 * + Math.random() * partial.getRoot().getChildren().size())) - 10))
+				 * .getBoard(); System.out.println("move chosen"); moveToMake.printBoard();
+				 */
+				// Make move decision
+
+				
+				Board moveToMake = new Board();
 				if (partial.getRoot().getChildren().size() == 0) {
 					System.out.println("I am out of moves");
 					break;
 				}
-				Board moveToMake = partial.getRoot().getChildren()
-						.get(Math.max(0, ((int) (1 + Math.random() * partial.getRoot().getChildren().size()))-10))
-						.getBoard();
-				System.out.println("move chosen");
-				moveToMake.printBoard();
-
-				// Make move decision
-
-				/*
-				 * double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY,
-				 * Double.POSITIVE_INFINITY, white); Board moveToMake = new Board();
-				 * if(partial.getRoot().getChildren().size()==0) {
-				 * System.out.println("I am out of moves"); break; } for (Node node :
-				 * partial.getRoot().getChildren()) { if (minimax == node.getValue()) {
-				 * moveToMake = node.getBoard();
-				 * 
-				 * } }
-				 */
+				moveToMake = minimax(partial.getRoot(), 2);
 
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
@@ -249,28 +242,21 @@ public class COSC322Test extends GamePlayer {
 
 				// TODO game tree lack states where the queen moves and shoots the square it was
 				// just on and has states where queens don't move but do shoot
-				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+
+				/*
+				 * Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
+				 * System.out.println("move chosen"); moveToMake.printBoard();
+				 */
+				// Make move decision
+
+				Board moveToMake = new Board();
 				if (partial.getRoot().getChildren().size() == 0) {
 					System.out.println("I am out of moves");
 					break;
 				}
-				Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
-				System.out.println("move chosen");
-				moveToMake.printBoard();
-
-				// Make move decision
-
-				/*
-				 * double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY,
-				 * Double.POSITIVE_INFINITY, white); Board moveToMake = new Board();
-				 * if(partial.getRoot().getChildren().size()==0) {
-				 * System.out.println("I am out of moves"); break; } for (Node node :
-				 * partial.getRoot().getChildren()) { if (minimax == node.getValue()) {
-				 * moveToMake = node.getBoard();
-				 * 
-				 * } }
-				 */
-
+				moveToMake = minimax(partial.getRoot(), 2);
+				
 				// Get Move Coords
 				int[] oldBlackQueenCoord = new int[2];
 				int[] newBlackQueenCoord = new int[2];
@@ -352,21 +338,15 @@ public class COSC322Test extends GamePlayer {
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 			// Figure out who is player 1
-			white = (this.whiteUser.equals(this.userName)) ? true : false;
+			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
 
 			if (white) {
 				this.board = new Board();
 				Tree partial = new Tree();
 				partial.generatePartialGameTree(this.board, true, 2, partial.getRoot());
-				double minimax = minimax(partial.getRoot(), 2, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-						true);
+				
 				Board moveToMake = new Board();
-				for (Node node : partial.getRoot().getChildren()) {
-					if (minimax == node.getValue()) {
-						moveToMake = node.getBoard();
-
-					}
-				}
+				moveToMake = minimax(partial.getRoot(), 2);
 				Board boardBeforeMove = (Board) this.board.clone();
 
 				// Get Move Coords
@@ -473,48 +453,84 @@ public class COSC322Test extends GamePlayer {
 
 	}
 
-	public double minimax(Node current, int depth, double alpha, double beta, boolean maxPlayer) {
-		// Node parent = current.getParent();
+	public Board minimax(Node current, int depth) {
+		Node move = MaxValue(current, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+		return move.getBoard();
+	}
 
+	public Node MaxValue(Node current, int depth, double alpha, double beta) {
 		if (depth == 0) {
-			TerritoryHeuristic heur = new TerritoryHeuristic();
-			return heur.value(current.getBoard());
+			current.value = value(current.getBoard(), this.white);
+			return current;
 		}
-		if (maxPlayer) {
-			double maxEval = Double.NEGATIVE_INFINITY;
-			for (int i = 0; i < current.getChildren().size(); i++) {
-				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, false);
-				maxEval = Math.max(maxEval, eval);
-				alpha = Math.max(alpha, eval);
-
-				if (beta <= alpha) {
-
-					break;
-				}
-
+		Node v = new Node(null);
+		v.value = Double.NEGATIVE_INFINITY;
+		for (Node node : current.getChildren()) {
+			Node v2 = MinValue(node, depth - 1, alpha, beta);
+			if (v2.value > v.value) {
+				v = v2;
+				alpha = Math.max(alpha, v.value);
 			}
-			current.setValue(maxEval);
-			return maxEval;
-		} else {
-			double minEval = Double.POSITIVE_INFINITY;
-			for (int i = 0; i < current.getChildren().size(); i++) {
-				double eval = minimax(current.getChildren().get(i), depth - 1, alpha, beta, true);
-				minEval = Math.min(minEval, eval);
-				beta = Math.min(beta, eval);
-
-				if (beta <= alpha) {
-
-					break;
-				}
-
+			if (v.value >= beta) {
+				return v;
 			}
-			current.setValue(minEval);
-			return minEval;
 		}
+
+		return v;
 
 	}
 
-	public double value(Board board) {
+	public Node MinValue(Node current, int depth, double alpha, double beta) {
+		if (depth == 0) {
+			current.value = value(current.getBoard(), this.white);
+			return current;
+		}
+		Node v = new Node(null);
+		v.value = Double.POSITIVE_INFINITY;
+		for (Node node : current.getChildren()) {
+			Node v2 = MaxValue(node, depth - 1, alpha, beta);
+			if (v2.value < v.value) {
+				v = v2;
+				beta = Math.min(beta, v.value);
+			}
+			if (v.value <= alpha) {
+				return v;
+			}
+		}
+
+		return v;
+
+	}
+
+	/*
+	 * public double minimax(Node current, int depth, double alpha, double beta,
+	 * boolean maxPlayer) { // Node parent = current.getParent();
+	 * 
+	 * if (depth == 0) { return value(current.getBoard(), this.white); } if
+	 * (maxPlayer) { double maxEval = Double.NEGATIVE_INFINITY; for (int i = 0; i <
+	 * current.getChildren().size(); i++) { double eval =
+	 * minimax(current.getChildren().get(i), depth - 1, alpha, beta, false); maxEval
+	 * = Math.max(maxEval, eval); alpha = Math.max(alpha, eval);
+	 * 
+	 * if (beta <= alpha) {
+	 * 
+	 * break; }
+	 * 
+	 * } current.setValue(maxEval); return maxEval; } else { double minEval =
+	 * Double.POSITIVE_INFINITY; for (int i = 0; i < current.getChildren().size();
+	 * i++) { double eval = minimax(current.getChildren().get(i), depth - 1, alpha,
+	 * beta, true); minEval = Math.min(minEval, eval); beta = Math.min(beta, eval);
+	 * 
+	 * if (beta <= alpha) {
+	 * 
+	 * break; }
+	 * 
+	 * } current.setValue(minEval); return minEval; }
+	 * 
+	 * }
+	 */
+
+	public double value(Board board, boolean max) {
 		TerritoryHeuristic heur = new TerritoryHeuristic();
 		int[][] scoreBoard = heur.closestQueen(board);
 
@@ -522,9 +538,17 @@ public class COSC322Test extends GamePlayer {
 		for (int i = 0; i < scoreBoard.length; i++) {
 			for (int j = 0; j < scoreBoard[i].length; j++) {
 				if (scoreBoard[i][j] == 1) {
-					sum += 1;
+					if (max) {
+						sum += 1;
+					} else {
+						sum -= 1;
+					}
 				} else if (scoreBoard[i][j] == 2) {
-					sum -= 1;
+					if (max) {
+						sum -= 1;
+					} else {
+						sum += 1;
+					}
 				}
 			}
 		}
