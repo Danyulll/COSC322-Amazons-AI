@@ -137,7 +137,7 @@ public class COSC322Test extends GamePlayer {
 
 				// TODO game tree lack states where the queen moves and shoots the square it was
 				// just on and has states where queens don't move but do shoot
-				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
 				
 				/*
 				 * Board moveToMake = partial.getRoot().getChildren() .get(Math.max(0, ((int) (1
@@ -152,7 +152,7 @@ public class COSC322Test extends GamePlayer {
 					System.out.println("I am out of moves");
 					break;
 				}
-				moveToMake = minimax(partial.getRoot(), 2);
+				moveToMake = minimax(partial.getRoot(), 1);
 
 				// Get Move Coords
 				int[] oldWhiteQueenCoord = new int[2];
@@ -242,7 +242,7 @@ public class COSC322Test extends GamePlayer {
 
 				// TODO game tree lack states where the queen moves and shoots the square it was
 				// just on and has states where queens don't move but do shoot
-				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
 
 				/*
 				 * Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
@@ -255,7 +255,7 @@ public class COSC322Test extends GamePlayer {
 					System.out.println("I am out of moves");
 					break;
 				}
-				moveToMake = minimax(partial.getRoot(), 2);
+				moveToMake = minimax(partial.getRoot(), 1);
 				
 				// Get Move Coords
 				int[] oldBlackQueenCoord = new int[2];
@@ -343,10 +343,10 @@ public class COSC322Test extends GamePlayer {
 			if (white) {
 				this.board = new Board();
 				Tree partial = new Tree();
-				partial.generatePartialGameTree(this.board, true, 2, partial.getRoot());
+				partial.generatePartialGameTree(this.board, true, 1, partial.getRoot());
 				
 				Board moveToMake = new Board();
-				moveToMake = minimax(partial.getRoot(), 2);
+				moveToMake = minimax(partial.getRoot(), 1);
 				Board boardBeforeMove = (Board) this.board.clone();
 
 				// Get Move Coords
@@ -366,7 +366,7 @@ public class COSC322Test extends GamePlayer {
 								newWhiteQueenCoord[1] = j;
 							}
 
-							if (moveToMake.board[i][j] == 0 && boardBeforeMove.board[i][j] == 1) {
+							if (moveToMake.board[i][j] != 1 && boardBeforeMove.board[i][j] == 1) {
 								oldWhiteQueenCoord[0] = i;
 								oldWhiteQueenCoord[1] = j;
 							}
