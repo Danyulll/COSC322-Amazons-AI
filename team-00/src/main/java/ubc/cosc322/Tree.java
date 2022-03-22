@@ -96,7 +96,7 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 300)
+				if (count > 500)
 					break;
 			}
 
@@ -165,13 +165,15 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 300)
+				if (count > 500)
 					break;
 			}
 
 		}
 
 	}
+	
+
 
 	
 }
