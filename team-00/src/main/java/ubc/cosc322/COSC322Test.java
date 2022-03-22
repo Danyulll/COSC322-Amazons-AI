@@ -345,13 +345,13 @@ public String firstPlayer;
 			break;
 
 		case GameMessage.GAME_ACTION_START:
-			this.firstPlayer = "white";
+			this.firstPlayer = "black";
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 			// Figure out who is player 1
 			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
 
-			if (this.firstPlayer.equals("white")) {
+			if (this.firstPlayer.equals("white") && this.white) {
 				this.board = new Board();
 				Tree partial = new Tree();
 				partial.generatePartialGameTree(this.board, true, 1, partial.getRoot());
@@ -413,7 +413,7 @@ public String firstPlayer;
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 
-			}else{
+			}else if(this.firstPlayer.equals("black")&& !this.white){
 				Board boardBeforeMove = (Board) board.clone();
 				System.out.println("board before the move");
 				boardBeforeMove.printBoard();
