@@ -278,19 +278,20 @@ public class COSC322Test extends GamePlayer {
 				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 
 			} else if (!white) { // If we are player 2 wait to receive a move and then make
+				System.out.println("recieved a move");
 				// recieve black's move
 				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.QUEEN_POS_CURR);
 				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.Queen_POS_NEXT);
 				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-				// update local board storage
-				this.board = this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
-						true);
-				// clone board before move
-				Board boardBeforeMove = (Board) board.clone();
-				System.out.println("local board before move");
-				boardBeforeMove.printBoard();
+
+				System.out.println(
+						"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
+				System.out.println(
+						"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
+				System.out
+						.println("Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
 				// check if move was legal
 				// boolean illegalMove = IllegalMoveFinder.illegalMoveFound(QueenPosCurEnemey,
 				// QueenPosNewEnemey,
@@ -335,6 +336,14 @@ public class COSC322Test extends GamePlayer {
 				}
 				
 				
+
+				// update local board storage
+				this.board = this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
+						true);
+				// clone board before move
+				Board boardBeforeMove = (Board) board.clone();
+				System.out.println("local board before move");
+				boardBeforeMove.printBoard();
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
 				// TODO game tree lack states where the queen moves and shoots the square it was
