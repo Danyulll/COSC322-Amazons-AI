@@ -119,7 +119,7 @@ public class Board implements Cloneable {
 		return boardForArrowGeneration;
 	}
 
-	public HashMap<ArrayList<Integer>, ArrayList<Integer>> makeHashTable() {
+	public static HashMap<ArrayList<Integer>, ArrayList<Integer>> makeHashTable() {
 		HashMap<ArrayList<Integer>, ArrayList<Integer>> boardConversion = new HashMap<>();
 
 		ArrayList<Integer> keys = new ArrayList<>();

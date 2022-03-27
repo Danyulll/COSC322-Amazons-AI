@@ -49,9 +49,7 @@ public class Tree {
 				for (Position position : movesQueen) {
 					// get possible arrow shots for each queen position
 
-					// TODO right now the possible arrow moves are found using the board where the
-					// queen hasn't moved. This means the tree won't have a state for when a queen
-					// moves and shoots an arrow where it just was
+					
 					LegalArrow arrowGetter = new LegalArrow();
 					Board temp = (Board) curr.clone();
 					temp.updateGameBoard(temp, Queen.getQueenCurr(), position.getXY(), false);
@@ -96,8 +94,8 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 500)
-					break;
+				//if (count > 500)
+					//break;
 			}
 
 		} else {
@@ -165,8 +163,8 @@ public class Tree {
 			for (Node child : root.getChildren()) {
 				this.generatePartialGameTree(child.getBoard(), !white, depth - 1, child);
 				count++;
-				if (count > 500)
-					break;
+				//if (count > 500)
+					//break;
 			}
 
 		}

@@ -1,9 +1,6 @@
 package ubc.cosc322;
 
 import java.util.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -12,8 +9,7 @@ import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
 import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
 import ygraph.ai.smartfox.games.amazons.HumanPlayer;
-import java.util.Timer;
-import java.util.TimerTask;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -34,7 +30,8 @@ public class COSC322Test extends GamePlayer {
 	public String blackUser;
 	public Board board;
 	public boolean white;
-public String firstPlayer;
+	public String firstPlayer;
+
 	/**
 	 * The main method
 	 * 
@@ -127,6 +124,58 @@ public String firstPlayer;
 				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.Queen_POS_NEXT);
 				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+
+				System.out.println(
+						"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
+				System.out.println(
+						"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
+				System.out
+						.println("Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
+				// check if move was legal
+				// boolean illegalMove = IllegalMoveFinder.illegalMoveFound(QueenPosCurEnemey,
+				// QueenPosNewEnemey,
+				// ArrowPosEnemey, this.board);
+				HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
+				LegalMove moveGetter = new LegalMove();
+				boolean illegalQueenMove = true;
+				ArrayList<Position> moves = moveGetter.getLegalMove(
+						new Queen(
+								new Position(table.get(QueenPosCurEnemey).get(0), table.get(QueenPosCurEnemey).get(1))),
+						this.board);
+				for (Position position : moves) {
+					if(position.getX()==table.get(QueenPosNewEnemey).get(0) && position.getY() == table.get(QueenPosNewEnemey).get(1)) {
+						illegalQueenMove = false;
+						break;}
+				}
+
+				if (illegalQueenMove) {
+					System.out.println("opponenet made an illegal queen move");
+					System.out.println(
+							"*************************************************************************************************************************************************************************************************************");
+					break;
+				}
+				
+				boolean illegalArrowMove = true;
+				LegalArrow arrowGetter = new LegalArrow();
+				Board temp = (Board) this.board.clone();
+				temp.updateGameBoard(temp, QueenPosCurEnemey, QueenPosNewEnemey, true);
+				ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(table.get(QueenPosNewEnemey).get(0), table.get(QueenPosNewEnemey).get(1), temp);
+				
+				for (Position position2 : arrowMoves) {
+					if(position2.getX()==table.get(ArrowPosEnemey).get(0) && position2.getY() == table.get(ArrowPosEnemey).get(1)) {
+						illegalArrowMove = false;
+						break;}
+				}
+				
+				if (illegalArrowMove) {
+					System.out.println("opponenet made an illegal arrow move");
+					System.out.println(
+							"*************************************************************************************************************************************************************************************************************");
+					break;
+				}
+				
+				
+
 				// update local board storage
 				this.board = this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
 						true);
@@ -250,7 +299,6 @@ public String firstPlayer;
 
 				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
 
-
 				/*
 				 * Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
 				 * System.out.println("move chosen"); moveToMake.printBoard();
@@ -345,7 +393,7 @@ public String firstPlayer;
 			break;
 
 		case GameMessage.GAME_ACTION_START:
-			this.firstPlayer = "black";
+			this.firstPlayer = "white";
 			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 			// Figure out who is player 1
@@ -355,7 +403,7 @@ public String firstPlayer;
 				this.board = new Board();
 				Tree partial = new Tree();
 				partial.generatePartialGameTree(this.board, true, 1, partial.getRoot());
-				
+
 				Board moveToMake = new Board();
 				moveToMake = minimax(partial.getRoot(), 1);
 				Board boardBeforeMove = (Board) this.board.clone();
@@ -413,7 +461,7 @@ public String firstPlayer;
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 
-			}else if(this.firstPlayer.equals("black")&& !this.white){
+			} else if (this.firstPlayer.equals("black") && !this.white) {
 				Board boardBeforeMove = (Board) board.clone();
 				System.out.println("board before the move");
 				boardBeforeMove.printBoard();
@@ -436,7 +484,7 @@ public String firstPlayer;
 					break;
 				}
 				moveToMake = minimax(partial.getRoot(), 1);
-				
+
 				// Get Move Coords
 				int[] oldBlackQueenCoord = new int[2];
 				int[] newBlackQueenCoord = new int[2];
@@ -559,7 +607,7 @@ public String firstPlayer;
 	public Node MaxValue(Node current, int depth, double alpha, double beta) {
 		if (depth == 0) {
 			current.value = value(current.getBoard(), this.white);
-		
+
 			return current;
 		}
 		Node v = new Node(null); // v has a default board
@@ -573,7 +621,7 @@ public String firstPlayer;
 			if (v.value >= beta) {
 				return v;
 			}
-			
+
 		}
 
 		return v;
@@ -583,7 +631,7 @@ public String firstPlayer;
 	public Node MinValue(Node current, int depth, double alpha, double beta) {
 		if (depth == 0) {
 			current.value = value(current.getBoard(), this.white);
-		
+
 			return current;
 		}
 		Node v = new Node(null);
@@ -597,7 +645,7 @@ public String firstPlayer;
 			if (v.value <= alpha) {
 				return v;
 			}
-			
+
 		}
 
 		return v;
