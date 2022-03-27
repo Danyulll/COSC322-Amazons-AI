@@ -291,7 +291,50 @@ public class COSC322Test extends GamePlayer {
 				Board boardBeforeMove = (Board) board.clone();
 				System.out.println("local board before move");
 				boardBeforeMove.printBoard();
+				// check if move was legal
+				// boolean illegalMove = IllegalMoveFinder.illegalMoveFound(QueenPosCurEnemey,
+				// QueenPosNewEnemey,
+				// ArrowPosEnemey, this.board);
+				HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
+				LegalMove moveGetter = new LegalMove();
+				boolean illegalQueenMove = true;
+				ArrayList<Position> moves = moveGetter.getLegalMove(
+						new Queen(
+								new Position(table.get(QueenPosCurEnemey).get(0), table.get(QueenPosCurEnemey).get(1))),
+						this.board);
+				for (Position position : moves) {
+					if(position.getX()==table.get(QueenPosNewEnemey).get(0) && position.getY() == table.get(QueenPosNewEnemey).get(1)) {
+						illegalQueenMove = false;
+						break;}
+				}
 
+				if (illegalQueenMove) {
+					System.out.println("opponenet made an illegal queen move");
+					System.out.println(
+							"*************************************************************************************************************************************************************************************************************");
+					break;
+				}
+				
+				boolean illegalArrowMove = true;
+				LegalArrow arrowGetter = new LegalArrow();
+				Board temp = (Board) this.board.clone();
+				temp.updateGameBoard(temp, QueenPosCurEnemey, QueenPosNewEnemey, true);
+				ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(table.get(QueenPosNewEnemey).get(0), table.get(QueenPosNewEnemey).get(1), temp);
+				
+				for (Position position2 : arrowMoves) {
+					if(position2.getX()==table.get(ArrowPosEnemey).get(0) && position2.getY() == table.get(ArrowPosEnemey).get(1)) {
+						illegalArrowMove = false;
+						break;}
+				}
+				
+				if (illegalArrowMove) {
+					System.out.println("opponenet made an illegal arrow move");
+					System.out.println(
+							"*************************************************************************************************************************************************************************************************************");
+					break;
+				}
+				
+				
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
 				// TODO game tree lack states where the queen moves and shoots the square it was
