@@ -101,9 +101,7 @@ public class COSC322Test extends GamePlayer {
 		System.out.println(msgDetails);
 		switch (messageType) {
 		case GameMessage.GAME_STATE_BOARD:
-			// System.out.println("case state board");
-			// System.out.println(msgDetails.toString());
-			// System.out.println(msgDetails.get("game-state"));
+		
 
 			this.gamegui.setGameState((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE));
 			this.board = new Board();
@@ -118,14 +116,14 @@ public class COSC322Test extends GamePlayer {
 			// If we are player one make a move
 			if (white) {
 				System.out.println("recieved a move");
-				// recieve black's move
+				
 				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.QUEEN_POS_CURR);
 				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.Queen_POS_NEXT);
 				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
 
-				//check legaility of move
+				// check legaility of move
 				HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
 				LegalMove moveGetter = new LegalMove();
 				boolean illegalQueenMove = true;
@@ -139,26 +137,6 @@ public class COSC322Test extends GamePlayer {
 						illegalQueenMove = false;
 						break;
 					}
-				}
-
-				if (illegalQueenMove) {
-					System.out.println("opponenet made an illegal queen move");
-					System.out.println(
-							"*************************************************************************************************************************************************************************************************************");
-
-					System.out.println(
-							"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
-					System.out.println(
-							"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
-					System.out
-							.println("Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
-					System.out.println("board before move");
-					this.board.printBoard();
-					System.out.println("opponent's queen move");
-					Board temp2 = (Board)this.board.clone();
-					temp2.updateGameBoard(temp2, QueenPosCurEnemey, QueenPosNewEnemey, true);
-					temp2.printBoard();
-					break;
 				}
 
 				boolean illegalArrowMove = true;
@@ -176,19 +154,24 @@ public class COSC322Test extends GamePlayer {
 					}
 				}
 
-				if (illegalArrowMove) {
-					System.out.println("opponenet made an illegal arrow move");
-					System.out.println("*************************************************************************************************************************************************************************************************************");
-					System.out.println("board berfore move");
+				if (illegalQueenMove||illegalArrowMove) {
+					System.out.println("opponenet made an illegal move");
+					System.out.println(
+							"*************************************************************************************************************************************************************************************************************");
+
+					System.out.println(
+							"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
+					System.out.println(
+							"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
+					System.out.println(
+							"Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
+					System.out.println("board before move");
+					this.board.printBoard();
+					System.out.println("opponent's queen move");
 					Board temp4 = (Board) this.board.clone();
-					temp4.updateGameBoard(temp4, QueenPosCurEnemey, QueenPosNewEnemey, true);
-					temp4.printBoard();
-					System.out.println("opponenet's move");
-					Board temp3 = (Board)this.board.clone();
-					temp3.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
+					temp4 = temp4.updateGameBoard(temp4, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
 							true);
-					temp3.printBoard();
-					break;
+					temp4.printBoard();				
 				}
 
 				// update local board storage
@@ -201,16 +184,11 @@ public class COSC322Test extends GamePlayer {
 
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
-				// TODO game tree lack states where the queen moves and shoots the square it was
-				// just on and has states where queens don't move but do shoot
+			
 				System.out.println("Generating tree");
 				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
 
-				/*
-				 * Board moveToMake = partial.getRoot().getChildren() .get(Math.max(0, ((int) (1
-				 * + Math.random() * partial.getRoot().getChildren().size())) - 10))
-				 * .getBoard(); System.out.println("move chosen"); moveToMake.printBoard();
-				 */
+			
 				// Make move decision
 
 				Board moveToMake = new Board();
@@ -292,9 +270,9 @@ public class COSC322Test extends GamePlayer {
 				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 
-			} else if (!white) { // If we are player 2 wait to receive a move and then make
+			} else if (!white) {
 				System.out.println("recieved a move");
-				// recieve black's move
+			
 				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 						.get(AmazonsGameMessage.QUEEN_POS_CURR);
 				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
@@ -307,10 +285,8 @@ public class COSC322Test extends GamePlayer {
 						"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
 				System.out
 						.println("Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
+				
 				// check if move was legal
-				// boolean illegalMove = IllegalMoveFinder.illegalMoveFound(QueenPosCurEnemey,
-				// QueenPosNewEnemey,
-				// ArrowPosEnemey, this.board);
 				HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
 				LegalMove moveGetter = new LegalMove();
 				boolean illegalQueenMove = true;
@@ -325,14 +301,7 @@ public class COSC322Test extends GamePlayer {
 						break;
 					}
 				}
-
-				if (illegalQueenMove) {
-					System.out.println("opponenet made an illegal queen move");
-					System.out.println(
-							"*************************************************************************************************************************************************************************************************************");
-					break;
-				}
-
+				
 				boolean illegalArrowMove = true;
 				LegalArrow arrowGetter = new LegalArrow();
 				Board temp = (Board) this.board.clone();
@@ -348,12 +317,27 @@ public class COSC322Test extends GamePlayer {
 					}
 				}
 
-				if (illegalArrowMove) {
-					System.out.println("opponenet made an illegal arrow move");
+				if (illegalQueenMove||illegalArrowMove) {
+					System.out.println("opponenet made an illegal move");
 					System.out.println(
 							"*************************************************************************************************************************************************************************************************************");
-					break;
+
+					System.out.println(
+							"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
+					System.out.println(
+							"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
+					System.out.println(
+							"Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
+					System.out.println("board before move");
+					this.board.printBoard();
+					System.out.println("opponent's queen move");
+					Board temp4 = (Board) this.board.clone();
+					temp4 = temp4.updateGameBoard(temp4, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
+							true);
+					temp4.printBoard();				
 				}
+				
+
 
 				// update local board storage
 				this.board = this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
@@ -362,17 +346,11 @@ public class COSC322Test extends GamePlayer {
 				Board boardBeforeMove = (Board) board.clone();
 				System.out.println("local board before move");
 				boardBeforeMove.printBoard();
+				
 				Tree partial = new Tree();
-				partial.getRoot().setBoard(boardBeforeMove);
-				// TODO game tree lack states where the queen moves and shoots the square it was
-				// just on and has states where queens don't move but do shoot
-
+				partial.getRoot().setBoard(boardBeforeMove);		
 				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
 
-				/*
-				 * Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
-				 * System.out.println("move chosen"); moveToMake.printBoard();
-				 */
 				// Make move decision
 
 				Board moveToMake = new Board();
@@ -533,19 +511,12 @@ public class COSC322Test extends GamePlayer {
 
 			} else if (this.firstPlayer.equals("black") && !this.white) {
 				Board boardBeforeMove = (Board) board.clone();
+				
 				System.out.println("board before the move");
+				
 				boardBeforeMove.printBoard();
-
 				Tree partial = new Tree();
-
-				// TODO game tree lack states where the queen moves and shoots the square it was
-				// just on and has states where queens don't move but do shoot
 				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
-
-				/*
-				 * Board moveToMake = partial.getRoot().getChildren().get(0).getBoard();
-				 * System.out.println("move chosen"); moveToMake.printBoard();
-				 */
 				// Make move decision
 
 				Board moveToMake = new Board();
@@ -724,33 +695,6 @@ public class COSC322Test extends GamePlayer {
 
 	}
 
-	/*
-	 * public double minimax(Node current, int depth, double alpha, double beta,
-	 * boolean maxPlayer) { // Node parent = current.getParent();
-	 * 
-	 * if (depth == 0) { return value(current.getBoard(), this.white); } if
-	 * (maxPlayer) { double maxEval = Double.NEGATIVE_INFINITY; for (int i = 0; i <
-	 * current.getChildren().size(); i++) { double eval =
-	 * minimax(current.getChildren().get(i), depth - 1, alpha, beta, false); maxEval
-	 * = Math.max(maxEval, eval); alpha = Math.max(alpha, eval);
-	 * 
-	 * if (beta <= alpha) {
-	 * 
-	 * break; }
-	 * 
-	 * } current.setValue(maxEval); return maxEval; } else { double minEval =
-	 * Double.POSITIVE_INFINITY; for (int i = 0; i < current.getChildren().size();
-	 * i++) { double eval = minimax(current.getChildren().get(i), depth - 1, alpha,
-	 * beta, true); minEval = Math.min(minEval, eval); beta = Math.min(beta, eval);
-	 * 
-	 * if (beta <= alpha) {
-	 * 
-	 * break; }
-	 * 
-	 * } current.setValue(minEval); return minEval; }
-	 * 
-	 * }
-	 */
 
 	public double value(Board board, boolean max) {
 		TerritoryHeuristic heur = new TerritoryHeuristic();
