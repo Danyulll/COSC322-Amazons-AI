@@ -181,12 +181,34 @@ public class COSC322Test extends GamePlayer {
 				Board boardBeforeMove = (Board) board.clone();
 				System.out.println("local board before move");
 				boardBeforeMove.printBoard();
+				
+				//Calculate what depth to go to
+				int ply = 0;
+				int emptySpotCounter = 0;
+				for (int i = 0; i < boardBeforeMove.board.length; i++) {
+					
+					for (int j = 0; j < boardBeforeMove.board.length; j++) {
+						if(boardBeforeMove.board[i][j]==0)
+							emptySpotCounter++;
+						
+					}
+				}
+				int possible = emptySpotCounter*emptySpotCounter;
+				if(possible >3000 )
+					ply=2;
+				else if(possible<=3000 && possible >2216 )
+					ply=3;
+				else if(possible<=2216 &&possible >1058 )
+					ply=3;
+				else if(possible<=1058 &&possible >529 )
+					ply=4;
 
+				System.out.println("ply chose and possible count: ("+ply+","+possible+")");
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);
 			
 				System.out.println("Generating tree");
-				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, ply, partial.getRoot());
 
 			
 				// Make move decision
@@ -197,7 +219,7 @@ public class COSC322Test extends GamePlayer {
 					break;
 				}
 				System.out.println("chossing move to make");
-				moveToMake = minimax(partial.getRoot(), 2);
+				moveToMake = minimax(partial.getRoot(), ply);
 				System.out.println("Move to make board: ");
 				moveToMake.printBoard();
 
@@ -346,10 +368,30 @@ public class COSC322Test extends GamePlayer {
 				Board boardBeforeMove = (Board) board.clone();
 				System.out.println("local board before move");
 				boardBeforeMove.printBoard();
+				//Calculate what depth to go to
+				int ply = 0;
+				int emptySpotCounter = 0;
+				for (int i = 0; i < boardBeforeMove.board.length; i++) {
+					
+					for (int j = 0; j < boardBeforeMove.board.length; j++) {
+						if(boardBeforeMove.board[i][j]==0)
+							emptySpotCounter++;
+						
+					}
+				}
+				int possible = emptySpotCounter*emptySpotCounter;
+				if(possible >3000 )
+					ply=2;
+				else if(possible<=3000 && possible >2216 )
+					ply=3;
+				else if(possible<=2216 &&possible >1058 )
+					ply=3;
+				else if(possible<=1058 &&possible >529 )
+					ply=4;
 				
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);		
-				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, ply, partial.getRoot());
 
 				// Make move decision
 
@@ -360,7 +402,7 @@ public class COSC322Test extends GamePlayer {
 				}
 				System.out.println("board I am sending to minimax");
 				partial.getRoot().getBoard().printBoard();
-				moveToMake = minimax(partial.getRoot(), 2);
+				moveToMake = minimax(partial.getRoot(), ply);
 				System.out.println("Move to make board: ");
 				moveToMake.printBoard();
 
@@ -435,9 +477,7 @@ public class COSC322Test extends GamePlayer {
 
 			}
 
-			t = 30;
-			Timer timer = new Timer();
-			timer.schedule(new countDown(), 0, 5000);
+		
 			break;
 
 		case GameMessage.GAME_ACTION_START:
@@ -516,7 +556,7 @@ public class COSC322Test extends GamePlayer {
 				
 				boardBeforeMove.printBoard();
 				Tree partial = new Tree();
-				partial.generatePartialGameTree(boardBeforeMove, white, 1, partial.getRoot());
+				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
 				// Make move decision
 
 				Board moveToMake = new Board();
@@ -524,7 +564,7 @@ public class COSC322Test extends GamePlayer {
 					System.out.println("I am out of moves");
 					break;
 				}
-				moveToMake = minimax(partial.getRoot(), 1);
+				moveToMake = minimax(partial.getRoot(), 2);
 
 				// Get Move Coords
 				int[] oldBlackQueenCoord = new int[2];
@@ -625,18 +665,6 @@ public class COSC322Test extends GamePlayer {
 		gameClient = new GameClient(userName, passwd, this);
 	}
 
-	int t = 30;
-
-	class countDown extends TimerTask {
-		public void run() {
-			if (t > 0) {
-				System.out.println(t + " seconds left");
-				t -= 5;
-			}
-
-		}
-
-	}
 
 	public Board minimax(Node current, int depth) {
 		Node move = MaxValue(current, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
