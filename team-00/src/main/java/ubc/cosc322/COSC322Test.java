@@ -183,7 +183,7 @@ public class COSC322Test extends GamePlayer {
 				boardBeforeMove.printBoard();
 				
 				//Calculate what depth to go to
-				int ply = 0;
+				int ply = 1;
 				int emptySpotCounter = 0;
 				for (int i = 0; i < boardBeforeMove.board.length; i++) {
 					
@@ -367,7 +367,7 @@ public class COSC322Test extends GamePlayer {
 				System.out.println("local board before move");
 				boardBeforeMove.printBoard();
 				//Calculate what depth to go to
-				int ply = 0;
+				int ply = 1;
 				int emptySpotCounter = 0;
 				for (int i = 0; i < boardBeforeMove.board.length; i++) {
 					
