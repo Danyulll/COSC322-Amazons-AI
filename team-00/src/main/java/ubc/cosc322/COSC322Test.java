@@ -382,10 +382,9 @@ public class COSC322Test extends GamePlayer {
 					ply=2;
 				else if(possible<=3000 && possible >2216 )
 					ply=3;
-				else if(possible<=2216 &&possible >1058 )
+				else if(possible<=2216)
 					ply=3;
-				else if(possible<=1058 &&possible >529 )
-					ply=4;
+				
 				
 				Tree partial = new Tree();
 				partial.getRoot().setBoard(boardBeforeMove);		
