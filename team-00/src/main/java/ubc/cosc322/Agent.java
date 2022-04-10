@@ -15,6 +15,15 @@ public class Agent {
 	private ArrayList<Integer> QueenPosCurSend;
 	private ArrayList<Integer> QueenPosNewSend;
 	private ArrayList<Integer> ArrowPosSend;
+	private boolean outOfMoves;
+
+	public boolean isOutOfMoves() {
+		return outOfMoves;
+	}
+
+	public void setOutOfMoves(boolean outOfMoves) {
+		this.outOfMoves = outOfMoves;
+	}
 
 	public ArrayList<Integer> getQueenPosCurSend() {
 		return QueenPosCurSend;
@@ -188,7 +197,7 @@ public class Agent {
 
 		Board moveToMake = new Board();
 		if (partial.getRoot().getChildren().size() == 0) {
-			System.out.println("I am out of moves");
+			this.setOutOfMoves(true);
 			return;
 		}	
 		moveToMake = minimax(partial.getRoot(), ply);

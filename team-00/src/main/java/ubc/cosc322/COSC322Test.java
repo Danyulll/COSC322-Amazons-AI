@@ -117,16 +117,21 @@ public class COSC322Test extends GamePlayer {
 			ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
 					.get(AmazonsGameMessage.Queen_POS_NEXT);
 			ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-			this.board=this.board.updateGameBoard(this.board,QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, true);
+			this.board = this.board.updateGameBoard(this.board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
+					true);
 			System.out.println("Board before our move");
 			this.board.printBoard();
-			Agent agent = new Agent(QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, board, white);
-	
-			//TODO this doesn't owrk right now
-			//agent.legalityCheck();
+			Agent agent = new Agent(QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, this.board, white);
+
+			// TODO this doesn't owrk right now
+			// agent.legalityCheck();
 			agent.makeMove();
+			if (agent.isOutOfMoves() == true)
+				break;
 			System.out.println("Board after move");
 			agent.getBoard().printBoard();
+			this.board = this.board.updateGameBoard(this.board, agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
+					agent.getArrowPosSend(), true);
 			this.gamegui.updateGameState(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
 					agent.getArrowPosSend());
 			gameClient.sendMoveMessage(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(), agent.getArrowPosSend());
@@ -146,23 +151,25 @@ public class COSC322Test extends GamePlayer {
 				agentF.makeMove();
 				System.out.println("Board after move");
 				agentF.getBoard().printBoard();
-				this.board=this.board.updateGameBoard(this.board, agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(), agentF.getArrowPosSend(), true);
+				this.board = this.board.updateGameBoard(this.board, agentF.getQueenPosCurSend(),
+						agentF.getQueenPosNewSend(), agentF.getArrowPosSend(), true);
 				this.gamegui.updateGameState(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
 						agentF.getArrowPosSend());
 				gameClient.sendMoveMessage(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
-						agentF.getArrowPosSend());		
+						agentF.getArrowPosSend());
 			} else if (this.firstPlayer.equals("black") && !this.white) {
 				agentF.makeMove();
 				System.out.println("Board after move");
 				agentF.getBoard().printBoard();
-				this.board=this.board.updateGameBoard(this.board, agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(), agentF.getArrowPosSend(), true);
+				this.board = this.board.updateGameBoard(this.board, agentF.getQueenPosCurSend(),
+						agentF.getQueenPosNewSend(), agentF.getArrowPosSend(), true);
 				this.gamegui.updateGameState(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
 						agentF.getArrowPosSend());
 				gameClient.sendMoveMessage(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
 						agentF.getArrowPosSend());
 
 			}
-		
+
 			break;
 
 		default:
