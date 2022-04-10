@@ -19,18 +19,17 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  */
 public class COSC322Test extends GamePlayer {
-
+	// Attributes
 	private GameClient gameClient = null;
 	private BaseGameGUI gamegui = null;
-
 	private String userName;
 	private String passwd;
-
-	public String whiteUser;
-	public String blackUser;
-	public Board board;
-	public boolean white;
-	public String firstPlayer;
+	private String whiteUser;
+	private String blackUser;
+	private Board board;
+	private Board previous;
+	private boolean white;
+	private String firstPlayer;
 
 	/**
 	 * The main method
@@ -53,6 +52,7 @@ public class COSC322Test extends GamePlayer {
 		}
 	}
 
+	// Constructors
 	/**
 	 * Any name and passwd
 	 * 
@@ -69,6 +69,97 @@ public class COSC322Test extends GamePlayer {
 
 	}
 
+	// Getters and Setters
+
+	public BaseGameGUI getGamegui() {
+		return gamegui;
+	}
+
+	public void setGamegui(BaseGameGUI gamegui) {
+		this.gamegui = gamegui;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPasswd() {
+		return passwd;
+	}
+
+	public void setPasswd(String passwd) {
+		this.passwd = passwd;
+	}
+
+	public String getWhiteUser() {
+		return whiteUser;
+	}
+
+	public void setWhiteUser(String whiteUser) {
+		this.whiteUser = whiteUser;
+	}
+
+	public String getBlackUser() {
+		return blackUser;
+	}
+
+	public void setBlackUser(String blackUser) {
+		this.blackUser = blackUser;
+	}
+
+	public Board getBoard() {
+		return board;
+	}
+
+	public void setBoard(Board board) {
+		this.board = board;
+	}
+
+	public Board getPrevious() {
+		return previous;
+	}
+
+	public void setPrevious(Board previous) {
+		this.previous = previous;
+	}
+
+	public boolean isWhite() {
+		return white;
+	}
+
+	public void setWhite(boolean white) {
+		this.white = white;
+	}
+
+	public String getFirstPlayer() {
+		return firstPlayer;
+	}
+
+	public void setFirstPlayer(String firstPlayer) {
+		this.firstPlayer = firstPlayer;
+	}
+
+	public void setGameClient(GameClient gameClient) {
+		this.gameClient = gameClient;
+	}
+
+	@Override
+	public GameClient getGameClient() {
+		// TODO Auto-generated method stub
+		return this.gameClient;
+	}
+
+	@Override
+	public BaseGameGUI getGameGUI() {
+		// TODO Auto-generated method stub
+		return this.gamegui;
+	}
+
+	// Methods
 	@Override
 	public void onLogin() {
 		/*
@@ -102,48 +193,50 @@ public class COSC322Test extends GamePlayer {
 		switch (messageType) {
 		case GameMessage.GAME_STATE_BOARD:
 
-			this.gamegui.setGameState((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE));
-			this.board = new Board();
+			this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE));
+			this.setBoard(new Board());
 			System.out.println("This is our initial board");
-			board.printBoard();
+			this.getBoard().printBoard();
 
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
-			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
-			this.gamegui.updateGameState(msgDetails);
-			// If we are player one make a move
+			// this.white = (this.whiteUser.equals(this.userName)) ? true : false;
+			this.getGameGUI().updateGameState(msgDetails);
+
 			ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
 					.get(AmazonsGameMessage.QUEEN_POS_CURR);
 			ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
 					.get(AmazonsGameMessage.Queen_POS_NEXT);
 			ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-			this.board = this.board.updateGameBoard(this.board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
-					true);
+			this.setBoard(this.getBoard().updateGameBoard(this.board, QueenPosCurEnemey, QueenPosNewEnemey,
+					ArrowPosEnemey, true));
 			System.out.println("Board before our move");
-			this.board.printBoard();
-			Agent agent = new Agent(QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, this.board, white);
+			this.getBoard().printBoard();
+			Agent agent = new Agent(QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, this.getBoard(), this.isWhite());
 
-			// TODO this doesn't owrk right now
-			// agent.legalityCheck();
+			agent.legalityCheck(this.getPrevious());
 			agent.makeMove();
-			if (agent.isOutOfMoves() == true)
+			if (agent.isOutOfMoves() == true) {
+				System.out.println("I am out of moves");
 				break;
+			}
 			System.out.println("Board after move");
 			agent.getBoard().printBoard();
-			this.board = this.board.updateGameBoard(this.board, agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
-					agent.getArrowPosSend(), true);
-			this.gamegui.updateGameState(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
+			this.setBoard(this.getBoard().updateGameBoard(this.board, agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
+					agent.getArrowPosSend(), true)); 
+			this.getGameGUI().updateGameState(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
 					agent.getArrowPosSend());
-			gameClient.sendMoveMessage(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(), agent.getArrowPosSend());
-
+			this.getGameClient().sendMoveMessage(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(), agent.getArrowPosSend());
+			this.setPrevious((Board) this.board.clone());
 			break;
 
 		case GameMessage.GAME_ACTION_START:
-			this.firstPlayer = "white";
-			this.blackUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK);
-			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
-			// Figure out who is player 1
-			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
+			// Set who is white and black and who moves first
+			this.setFirstPlayer("white");
+			this.setBlackUser((String) msgDetails.get(AmazonsGameMessage.PLAYER_BLACK));
+			this.setWhiteUser((String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE));
+			this.setWhite((this.whiteUser.equals(this.userName)) ? true : false);
+			// Make first move if your colo moves first and you are that color
 			System.out.println("Board before move");
 			this.board.printBoard();
 			Agent agentF = new Agent(new Board(), this.white);
@@ -169,6 +262,8 @@ public class COSC322Test extends GamePlayer {
 						agentF.getArrowPosSend());
 
 			}
+			// Keep track of board before any move to compare boards for legality
+			this.previous = (Board) this.board.clone();
 
 			break;
 
@@ -184,103 +279,9 @@ public class COSC322Test extends GamePlayer {
 	}
 
 	@Override
-	public GameClient getGameClient() {
-		// TODO Auto-generated method stub
-		return this.gameClient;
-	}
-
-	@Override
-	public BaseGameGUI getGameGUI() {
-		// TODO Auto-generated method stub
-		return this.gamegui;
-	}
-
-	@Override
 	public void connect() {
 		// TODO Auto-generated method stub
 		gameClient = new GameClient(userName, passwd, this);
-	}
-
-	public Board minimax(Node current, int depth) {
-		Node move = MaxValue(current, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-		System.out.println("Board minimax is about to return");
-		move.getBoard().printBoard();
-		return move.getBoard();
-	}
-
-	public Node MaxValue(Node current, int depth, double alpha, double beta) {
-		if (depth == 0) {
-			current.value = value(current.getBoard(), this.white);
-
-			return current;
-		}
-		Node v = new Node(null); // v has a default board
-		v.value = Double.NEGATIVE_INFINITY;
-		for (Node node : current.getChildren()) {
-			Node v2 = MinValue(node, depth - 1, alpha, beta);
-			if (v2.value > v.value) {
-				v.value = v2.value;
-				v.setBoard(node.getBoard());
-				alpha = Math.max(alpha, v.value);
-			}
-			if (v.value >= beta) {
-				return v;
-			}
-
-		}
-
-		return v;
-
-	}
-
-	public Node MinValue(Node current, int depth, double alpha, double beta) {
-		if (depth == 0) {
-			current.value = value(current.getBoard(), this.white);
-
-			return current;
-		}
-		Node v = new Node(null);
-		v.value = Double.POSITIVE_INFINITY;
-		for (Node node : current.getChildren()) {
-			Node v2 = MaxValue(node, depth - 1, alpha, beta);
-			if (v2.value < v.value) {
-				v.value = v2.value;
-				v.setBoard(node.getBoard());
-				beta = Math.min(beta, v.value);
-			}
-			if (v.value <= alpha) {
-				return v;
-			}
-
-		}
-
-		return v;
-
-	}
-
-	public double value(Board board, boolean max) {
-		TerritoryHeuristic heur = new TerritoryHeuristic();
-		int[][] scoreBoard = heur.closestQueen(board);
-
-		double sum = 0;
-		for (int i = 0; i < scoreBoard.length; i++) {
-			for (int j = 0; j < scoreBoard[i].length; j++) {
-				if (scoreBoard[i][j] == 1) {
-					if (max) {
-						sum += 1;
-					} else {
-						sum -= 1;
-					}
-				} else if (scoreBoard[i][j] == 2) {
-					if (max) {
-						sum -= 1;
-					} else {
-						sum += 1;
-					}
-				}
-			}
-		}
-		return sum;
 	}
 
 }// end of class

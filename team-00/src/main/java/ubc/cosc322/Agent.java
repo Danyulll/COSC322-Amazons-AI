@@ -112,14 +112,14 @@ public class Agent {
 		ArrowPosEnemey = arrowPosEnemey;
 	}
 
-	public void legalityCheck() {
+	public void legalityCheck(Board previous) {
 		// check legaility of move
 		HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
 		LegalMove moveGetter = new LegalMove();
 		boolean illegalQueenMove = true;
 		ArrayList<Position> moves = moveGetter.getLegalMove(
 				new Queen(new Position(table.get(QueenPosCurEnemey).get(0), table.get(QueenPosCurEnemey).get(1))),
-				this.board);
+				previous);
 		for (Position position : moves) {
 			if (position.getX() == table.get(QueenPosNewEnemey).get(0)
 					&& position.getY() == table.get(QueenPosNewEnemey).get(1)) {
@@ -130,7 +130,7 @@ public class Agent {
 
 		boolean illegalArrowMove = true;
 		LegalArrow arrowGetter = new LegalArrow();
-		Board temp = (Board) this.getBoard().clone();
+		Board temp = (Board) previous.clone();
 		temp.updateGameBoard(temp, QueenPosCurEnemey, QueenPosNewEnemey, true);
 		ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(table.get(QueenPosNewEnemey).get(0),
 				table.get(QueenPosNewEnemey).get(1), temp);
@@ -184,7 +184,7 @@ public class Agent {
 		else if (possible <= 2216)
 			ply = 3;
 
-		System.out.println("ply chose and possible count: (" + ply + "," + possible + ")");
+		System.out.println("ply chosen and possible count: (" + ply + "," + possible + ")");
 		return ply;
 	}
 
