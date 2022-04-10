@@ -30,7 +30,7 @@ public class Tree {
 			return;
 		}
 		// if you are white generate your potential moves and then move on to generating
-		// blacks potentital moves
+		// blacks potential moves
 		if (white) {
 			// get the white queens
 			TerritoryHeuristic getQueens = new TerritoryHeuristic();

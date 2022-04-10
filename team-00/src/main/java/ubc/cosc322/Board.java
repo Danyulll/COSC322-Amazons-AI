@@ -18,15 +18,15 @@ public class Board implements Cloneable {
 	ArrayList<Position> BlackPos = new ArrayList<>();
 
 	public Board() {
-		board[1 - 1][4 - 1] = BLACK;
-		board[1 - 1][7 - 1] = BLACK;
-		board[4 - 1][1 - 1] = BLACK;
-		board[4 - 1][10 - 1] = BLACK;
+		board[0][3] = BLACK;
+		board[0][6] = BLACK;
+		board[3][0] = BLACK;
+		board[3][9] = BLACK;
 
-		board[7 - 1][1 - 1] = WHITE;
-		board[10 - 1][4 - 1] = WHITE;
-		board[10 - 1][7 - 1] = WHITE;
-		board[7 - 1][10 - 1] = WHITE;
+		board[6][0] = WHITE;
+		board[9][3] = WHITE;
+		board[9][6] = WHITE;
+		board[6][9] = WHITE;
 
 		initialPos();
 	}
