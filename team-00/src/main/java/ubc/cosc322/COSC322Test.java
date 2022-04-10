@@ -101,7 +101,6 @@ public class COSC322Test extends GamePlayer {
 		System.out.println(msgDetails);
 		switch (messageType) {
 		case GameMessage.GAME_STATE_BOARD:
-		
 
 			this.gamegui.setGameState((ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.GAME_STATE));
 			this.board = new Board();
@@ -111,370 +110,27 @@ public class COSC322Test extends GamePlayer {
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
 			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
-			System.out.println("initally updating game gui");
 			this.gamegui.updateGameState(msgDetails);
 			// If we are player one make a move
-			if (white) {
-				System.out.println("recieved a move");
-				
-				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
-						.get(AmazonsGameMessage.QUEEN_POS_CURR);
-				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
-						.get(AmazonsGameMessage.Queen_POS_NEXT);
-				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+			ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
+					.get(AmazonsGameMessage.QUEEN_POS_CURR);
+			ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
+					.get(AmazonsGameMessage.Queen_POS_NEXT);
+			ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
+			this.board=this.board.updateGameBoard(this.board,QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, true);
+			System.out.println("Board before our move");
+			this.board.printBoard();
+			Agent agent = new Agent(QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey, board, white);
+	
+			//TODO this doesn't owrk right now
+			//agent.legalityCheck();
+			agent.makeMove();
+			System.out.println("Board after move");
+			agent.getBoard().printBoard();
+			this.gamegui.updateGameState(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(),
+					agent.getArrowPosSend());
+			gameClient.sendMoveMessage(agent.getQueenPosCurSend(), agent.getQueenPosNewSend(), agent.getArrowPosSend());
 
-				// check legaility of move
-				HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
-				LegalMove moveGetter = new LegalMove();
-				boolean illegalQueenMove = true;
-				ArrayList<Position> moves = moveGetter.getLegalMove(
-						new Queen(
-								new Position(table.get(QueenPosCurEnemey).get(0), table.get(QueenPosCurEnemey).get(1))),
-						this.board);
-				for (Position position : moves) {
-					if (position.getX() == table.get(QueenPosNewEnemey).get(0)
-							&& position.getY() == table.get(QueenPosNewEnemey).get(1)) {
-						illegalQueenMove = false;
-						break;
-					}
-				}
-
-				boolean illegalArrowMove = true;
-				LegalArrow arrowGetter = new LegalArrow();
-				Board temp = (Board) this.board.clone();
-				temp.updateGameBoard(temp, QueenPosCurEnemey, QueenPosNewEnemey, true);
-				ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(table.get(QueenPosNewEnemey).get(0),
-						table.get(QueenPosNewEnemey).get(1), temp);
-
-				for (Position position2 : arrowMoves) {
-					if (position2.getX() == table.get(ArrowPosEnemey).get(0)
-							&& position2.getY() == table.get(ArrowPosEnemey).get(1)) {
-						illegalArrowMove = false;
-						break;
-					}
-				}
-
-				if (illegalQueenMove||illegalArrowMove) {
-					System.out.println("opponenet made an illegal move");
-					System.out.println(
-							"*************************************************************************************************************************************************************************************************************");
-
-					System.out.println(
-							"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
-					System.out.println(
-							"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
-					System.out.println(
-							"Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
-					System.out.println("board before move");
-					this.board.printBoard();
-					System.out.println("opponent's queen move");
-					Board temp4 = (Board) this.board.clone();
-					temp4 = temp4.updateGameBoard(temp4, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
-							true);
-					temp4.printBoard();				
-				}
-
-				// update local board storage
-				this.board = this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
-						true);
-				// clone board before move
-				Board boardBeforeMove = (Board) board.clone();
-				System.out.println("local board before move");
-				boardBeforeMove.printBoard();
-				
-				//Calculate what depth to go to
-				int ply = 1;
-				int emptySpotCounter = 0;
-				for (int i = 0; i < boardBeforeMove.board.length; i++) {
-					
-					for (int j = 0; j < boardBeforeMove.board.length; j++) {
-						if(boardBeforeMove.board[i][j]==0)
-							emptySpotCounter++;
-						
-					}
-				}
-				int possible = emptySpotCounter*emptySpotCounter;
-				if(possible >3000 )
-					ply=2;
-				else if(possible<=3000 && possible >2216 )
-					ply=3;
-				else if(possible<=2216 )
-					ply=3;
-				
-				System.out.println("ply chose and possible count: ("+ply+","+possible+")");
-				Tree partial = new Tree();
-				partial.getRoot().setBoard(boardBeforeMove);
-			
-				System.out.println("Generating tree");
-				partial.generatePartialGameTree(boardBeforeMove, white, ply, partial.getRoot());
-
-			
-				// Make move decision
-
-				Board moveToMake = new Board();
-				if (partial.getRoot().getChildren().size() == 0) {
-					System.out.println("I am out of moves");
-					break;
-				}
-				System.out.println("chossing move to make");
-				moveToMake = minimax(partial.getRoot(), ply);
-				System.out.println("Move to make board: ");
-				moveToMake.printBoard();
-
-				// Get Move Coords
-				int[] oldWhiteQueenCoord = new int[2];
-				int[] newWhiteQueenCoord = new int[2];
-				int[] newArrowcoord = new int[2];
-
-				for (int i = 0; i < boardBeforeMove.board.length; i++) {
-					for (int j = 0; j < boardBeforeMove.board.length; j++) {
-
-						if (moveToMake.board[i][j] == 3 && boardBeforeMove.board[i][j] != 3) {
-							newArrowcoord[0] = i;
-							newArrowcoord[1] = j;
-							System.out.println("arrow called");
-						}
-						if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 1) {
-							newWhiteQueenCoord[0] = i;
-							newWhiteQueenCoord[1] = j;
-							System.out.println("newWHite called");
-						}
-
-						if (moveToMake.board[i][j] != 1 && boardBeforeMove.board[i][j] == 1) {
-							System.out.println("***********************************");
-							System.out.println("moveToMake taking coords: " + i + "," + j);
-							oldWhiteQueenCoord[0] = i;
-							oldWhiteQueenCoord[1] = j;
-						}
-
-					}
-				}
-				ArrayList<Integer> QueenNew = new ArrayList<Integer>();
-				QueenNew.add(newWhiteQueenCoord[0]);
-				QueenNew.add(newWhiteQueenCoord[1]);
-				ArrayList<Integer> Arrow = new ArrayList<Integer>();
-				Arrow.add(newArrowcoord[0]);
-				Arrow.add(newArrowcoord[1]);
-				ArrayList<Integer> QueenOld = new ArrayList<>();
-				QueenOld.add(oldWhiteQueenCoord[0]);
-				QueenOld.add(oldWhiteQueenCoord[1]);
-
-				System.out.println("coordinates before converting");
-				System.out.println("QueenNew: " + QueenNew.get(0) + "," + QueenNew.get(1));
-				System.out.println("QueenOld: " + QueenOld.get(0) + "," + QueenOld.get(1));
-				System.out.println("Arrow: " + Arrow.get(0) + "," + Arrow.get(1));
-				// Convert To sendable coords
-				HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
-
-				// Send Move and update GUI
-				ArrayList<Integer> QueenPosCurSend = new ArrayList<>();
-				QueenPosCurSend = gaoTable.get(QueenOld);
-				ArrayList<Integer> QueenPosNewSend = new ArrayList<>();
-				QueenPosNewSend = gaoTable.get(QueenNew);
-				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
-				ArrowPosSend = gaoTable.get(Arrow);
-
-				System.out.println("coordinates after converting");
-				System.out.println("QueenNew: " + QueenPosNewSend.get(0) + "," + QueenPosNewSend.get(1));
-				System.out.println("QueenOld: " + QueenPosCurSend.get(0) + "," + QueenPosCurSend.get(1));
-				System.out.println("Arrow: " + ArrowPosSend.get(0) + "," + ArrowPosSend.get(1));
-
-				System.out.println("locally stored board before the update");
-				this.board.printBoard();
-
-				this.board = this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend,
-						true);
-				System.out.println("locally stored board after the update");
-				this.board.printBoard();
-
-				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-
-			} else if (!white) {
-				System.out.println("recieved a move");
-			
-				ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails
-						.get(AmazonsGameMessage.QUEEN_POS_CURR);
-				ArrayList<Integer> QueenPosNewEnemey = (ArrayList<Integer>) msgDetails
-						.get(AmazonsGameMessage.Queen_POS_NEXT);
-				ArrayList<Integer> ArrowPosEnemey = (ArrayList<Integer>) msgDetails.get(AmazonsGameMessage.ARROW_POS);
-
-				System.out.println(
-						"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
-				System.out.println(
-						"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
-				System.out
-						.println("Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
-				
-				// check if move was legal
-				HashMap<ArrayList<Integer>, ArrayList<Integer>> table = Board.makeHashTable();
-				LegalMove moveGetter = new LegalMove();
-				boolean illegalQueenMove = true;
-				ArrayList<Position> moves = moveGetter.getLegalMove(
-						new Queen(
-								new Position(table.get(QueenPosCurEnemey).get(0), table.get(QueenPosCurEnemey).get(1))),
-						this.board);
-				for (Position position : moves) {
-					if (position.getX() == table.get(QueenPosNewEnemey).get(0)
-							&& position.getY() == table.get(QueenPosNewEnemey).get(1)) {
-						illegalQueenMove = false;
-						break;
-					}
-				}
-				
-				boolean illegalArrowMove = true;
-				LegalArrow arrowGetter = new LegalArrow();
-				Board temp = (Board) this.board.clone();
-				temp.updateGameBoard(temp, QueenPosCurEnemey, QueenPosNewEnemey, true);
-				ArrayList<Position> arrowMoves = arrowGetter.getLegalArrow(table.get(QueenPosNewEnemey).get(0),
-						table.get(QueenPosNewEnemey).get(1), temp);
-
-				for (Position position2 : arrowMoves) {
-					if (position2.getX() == table.get(ArrowPosEnemey).get(0)
-							&& position2.getY() == table.get(ArrowPosEnemey).get(1)) {
-						illegalArrowMove = false;
-						break;
-					}
-				}
-
-				if (illegalQueenMove||illegalArrowMove) {
-					System.out.println("opponenet made an illegal move");
-					System.out.println(
-							"*************************************************************************************************************************************************************************************************************");
-
-					System.out.println(
-							"Enmey Queen's old position: " + QueenPosCurEnemey.get(0) + "," + QueenPosCurEnemey.get(1));
-					System.out.println(
-							"Enmey Queen's New position: " + QueenPosNewEnemey.get(0) + "," + QueenPosNewEnemey.get(1));
-					System.out.println(
-							"Enmey Arrow's New position: " + ArrowPosEnemey.get(0) + "," + ArrowPosEnemey.get(1));
-					System.out.println("board before move");
-					this.board.printBoard();
-					System.out.println("opponent's queen move");
-					Board temp4 = (Board) this.board.clone();
-					temp4 = temp4.updateGameBoard(temp4, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
-							true);
-					temp4.printBoard();				
-				}
-				
-
-
-				// update local board storage
-				this.board = this.board.updateGameBoard(board, QueenPosCurEnemey, QueenPosNewEnemey, ArrowPosEnemey,
-						true);
-				// clone board before move
-				Board boardBeforeMove = (Board) board.clone();
-				System.out.println("local board before move");
-				boardBeforeMove.printBoard();
-				//Calculate what depth to go to
-				int ply = 1;
-				int emptySpotCounter = 0;
-				for (int i = 0; i < boardBeforeMove.board.length; i++) {
-					
-					for (int j = 0; j < boardBeforeMove.board.length; j++) {
-						if(boardBeforeMove.board[i][j]==0)
-							emptySpotCounter++;
-						
-					}
-				}
-				int possible = emptySpotCounter*emptySpotCounter;
-				if(possible >3000 )
-					ply=2;
-				else if(possible<=3000 && possible >2216 )
-					ply=3;
-				else if(possible<=2216)
-					ply=3;
-				
-				
-				Tree partial = new Tree();
-				partial.getRoot().setBoard(boardBeforeMove);		
-				partial.generatePartialGameTree(boardBeforeMove, white, ply, partial.getRoot());
-
-				// Make move decision
-
-				Board moveToMake = new Board();
-				if (partial.getRoot().getChildren().size() == 0) {
-					System.out.println("I am out of moves");
-					break;
-				}
-				System.out.println("board I am sending to minimax");
-				partial.getRoot().getBoard().printBoard();
-				moveToMake = minimax(partial.getRoot(), ply);
-				System.out.println("Move to make board: ");
-				moveToMake.printBoard();
-
-				// Get Move Coords
-				int[] oldBlackQueenCoord = new int[2];
-				int[] newBlackQueenCoord = new int[2];
-				int[] newArrowcoord = new int[2];
-
-				for (int i = 0; i < boardBeforeMove.board.length; i++) {
-					for (int j = 0; j < boardBeforeMove.board.length; j++) {
-
-						if (moveToMake.board[i][j] == 3 && boardBeforeMove.board[i][j] != 3) {
-							newArrowcoord[0] = i;
-							newArrowcoord[1] = j;
-							System.out.println("arrow called");
-						}
-						if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 2) {
-							newBlackQueenCoord[0] = i;
-							newBlackQueenCoord[1] = j;
-							System.out.println("newWHite called");
-						}
-
-						if (moveToMake.board[i][j] != 2 && boardBeforeMove.board[i][j] == 2) {
-							System.out.println("***********************************");
-							System.out.println("moveToMake taking coords: " + i + "," + j);
-							oldBlackQueenCoord[0] = i;
-							oldBlackQueenCoord[1] = j;
-						}
-
-					}
-				}
-				ArrayList<Integer> QueenNew = new ArrayList<Integer>();
-				QueenNew.add(newBlackQueenCoord[0]);
-				QueenNew.add(newBlackQueenCoord[1]);
-				ArrayList<Integer> Arrow = new ArrayList<Integer>();
-				Arrow.add(newArrowcoord[0]);
-				Arrow.add(newArrowcoord[1]);
-				ArrayList<Integer> QueenOld = new ArrayList<>();
-				QueenOld.add(oldBlackQueenCoord[0]);
-				QueenOld.add(oldBlackQueenCoord[1]);
-
-				System.out.println("coordinates before converting");
-				System.out.println("QueenNew: " + QueenNew.get(0) + "," + QueenNew.get(1));
-				System.out.println("QueenOld: " + QueenOld.get(0) + "," + QueenOld.get(1));
-				System.out.println("Arrow: " + Arrow.get(0) + "," + Arrow.get(1));
-				// Convert To sendable coords
-				HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
-
-				// Send Move and update GUI
-				ArrayList<Integer> QueenPosCurSend = new ArrayList<>();
-				QueenPosCurSend = gaoTable.get(QueenOld);
-				ArrayList<Integer> QueenPosNewSend = new ArrayList<>();
-				QueenPosNewSend = gaoTable.get(QueenNew);
-				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
-				ArrowPosSend = gaoTable.get(Arrow);
-
-				System.out.println("coordinates after converting");
-				System.out.println("QueenNew: " + QueenPosNewSend.get(0) + "," + QueenPosNewSend.get(1));
-				System.out.println("QueenOld: " + QueenPosCurSend.get(0) + "," + QueenPosCurSend.get(1));
-				System.out.println("Arrow: " + ArrowPosSend.get(0) + "," + ArrowPosSend.get(1));
-
-				System.out.println("locally stored board before the update");
-				this.board.printBoard();
-
-				this.board = this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend,
-						true);
-				System.out.println("locally stored board after the update");
-				this.board.printBoard();
-
-				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-
-			}
-
-		
 			break;
 
 		case GameMessage.GAME_ACTION_START:
@@ -483,155 +139,31 @@ public class COSC322Test extends GamePlayer {
 			this.whiteUser = (String) msgDetails.get(AmazonsGameMessage.PLAYER_WHITE);
 			// Figure out who is player 1
 			this.white = (this.whiteUser.equals(this.userName)) ? true : false;
-
+			System.out.println("Board before move");
+			this.board.printBoard();
+			Agent agentF = new Agent(new Board(), this.white);
 			if (this.firstPlayer.equals("white") && this.white) {
-				this.board = new Board();
-				Tree partial = new Tree();
-				partial.generatePartialGameTree(this.board, true, 2, partial.getRoot());
-
-				Board moveToMake = new Board();
-				moveToMake = minimax(partial.getRoot(), 2);
-				Board boardBeforeMove = (Board) this.board.clone();
-
-				// Get Move Coords
-				int[] oldWhiteQueenCoord = new int[2];
-				int[] newWhiteQueenCoord = new int[2];
-				int[] newArrowcoord = new int[2];
-
-				for (int i = 0; i < boardBeforeMove.board.length; i++) {
-					for (int j = 0; j < boardBeforeMove.board.length; j++) {
-						if (moveToMake.board[i][j] != boardBeforeMove.board[i][j]) {
-							if (moveToMake.board[i][j] == 3 && boardBeforeMove.board[i][j] != 3) {
-								newArrowcoord[0] = i;
-								newArrowcoord[1] = j;
-							}
-							if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 1) {
-								newWhiteQueenCoord[0] = i;
-								newWhiteQueenCoord[1] = j;
-							}
-
-							if (moveToMake.board[i][j] != 1 && boardBeforeMove.board[i][j] == 1) {
-								oldWhiteQueenCoord[0] = i;
-								oldWhiteQueenCoord[1] = j;
-							}
-						}
-					}
-				}
-				ArrayList<Integer> QueenNew = new ArrayList<Integer>();
-				QueenNew.add(newWhiteQueenCoord[0]);
-				QueenNew.add(newWhiteQueenCoord[1]);
-				ArrayList<Integer> Arrow = new ArrayList<Integer>();
-				Arrow.add(newArrowcoord[0]);
-				Arrow.add(newArrowcoord[1]);
-				ArrayList<Integer> QueenOld = new ArrayList<>();
-				QueenOld.add(oldWhiteQueenCoord[0]);
-				QueenOld.add(oldWhiteQueenCoord[1]);
-				System.out.println("oldWhiteQueenCoord Array: " + oldWhiteQueenCoord[0] + "," + oldWhiteQueenCoord[1]);
-				System.out.println("newWhiteQueenCoord Array: " + newWhiteQueenCoord[0] + "," + newWhiteQueenCoord[1]);
-				System.out.println("newArrowcoord Array: " + newArrowcoord[0] + "," + newArrowcoord[1]);
-
-				// Convert Coords for move to send
-				HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
-				ArrayList<Integer> QueenPosCurSend = new ArrayList<>();
-				QueenPosCurSend = gaoTable.get(QueenOld);
-				ArrayList<Integer> QueenPosNewSend = new ArrayList<>();
-				QueenPosNewSend = gaoTable.get(QueenNew);
-				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
-				ArrowPosSend = gaoTable.get(Arrow);
-
-				// send game move and update gui
-
-				this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend, true);
-				System.out.println("updating game gui");
-				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-
+				agentF.makeMove();
+				System.out.println("Board after move");
+				agentF.getBoard().printBoard();
+				this.board=this.board.updateGameBoard(this.board, agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(), agentF.getArrowPosSend(), true);
+				this.gamegui.updateGameState(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
+						agentF.getArrowPosSend());
+				gameClient.sendMoveMessage(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
+						agentF.getArrowPosSend());		
 			} else if (this.firstPlayer.equals("black") && !this.white) {
-				Board boardBeforeMove = (Board) board.clone();
-				
-				System.out.println("board before the move");
-				
-				boardBeforeMove.printBoard();
-				Tree partial = new Tree();
-				partial.generatePartialGameTree(boardBeforeMove, white, 2, partial.getRoot());
-				// Make move decision
+				agentF.makeMove();
+				System.out.println("Board after move");
+				agentF.getBoard().printBoard();
+				this.board=this.board.updateGameBoard(this.board, agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(), agentF.getArrowPosSend(), true);
+				this.gamegui.updateGameState(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
+						agentF.getArrowPosSend());
+				gameClient.sendMoveMessage(agentF.getQueenPosCurSend(), agentF.getQueenPosNewSend(),
+						agentF.getArrowPosSend());
 
-				Board moveToMake = new Board();
-				if (partial.getRoot().getChildren().size() == 0) {
-					System.out.println("I am out of moves");
-					break;
-				}
-				moveToMake = minimax(partial.getRoot(), 2);
-
-				// Get Move Coords
-				int[] oldBlackQueenCoord = new int[2];
-				int[] newBlackQueenCoord = new int[2];
-				int[] newArrowcoord = new int[2];
-
-				for (int i = 0; i < boardBeforeMove.board.length; i++) {
-					for (int j = 0; j < boardBeforeMove.board.length; j++) {
-
-						if (moveToMake.board[i][j] == 3 && boardBeforeMove.board[i][j] != 3) {
-							newArrowcoord[0] = i;
-							newArrowcoord[1] = j;
-							System.out.println("arrow called");
-						}
-						if (boardBeforeMove.board[i][j] == 0 && moveToMake.board[i][j] == 2) {
-							newBlackQueenCoord[0] = i;
-							newBlackQueenCoord[1] = j;
-							System.out.println("newWHite called");
-						}
-
-						if (moveToMake.board[i][j] != 2 && boardBeforeMove.board[i][j] == 2) {
-							System.out.println("***********************************");
-							System.out.println("moveToMake taking coords: " + i + "," + j);
-							oldBlackQueenCoord[0] = i;
-							oldBlackQueenCoord[1] = j;
-						}
-
-					}
-				}
-				ArrayList<Integer> QueenNew = new ArrayList<Integer>();
-				QueenNew.add(newBlackQueenCoord[0]);
-				QueenNew.add(newBlackQueenCoord[1]);
-				ArrayList<Integer> Arrow = new ArrayList<Integer>();
-				Arrow.add(newArrowcoord[0]);
-				Arrow.add(newArrowcoord[1]);
-				ArrayList<Integer> QueenOld = new ArrayList<>();
-				QueenOld.add(oldBlackQueenCoord[0]);
-				QueenOld.add(oldBlackQueenCoord[1]);
-
-				System.out.println("coordinates before converting");
-				System.out.println("QueenNew: " + QueenNew.get(0) + "," + QueenNew.get(1));
-				System.out.println("QueenOld: " + QueenOld.get(0) + "," + QueenOld.get(1));
-				System.out.println("Arrow: " + Arrow.get(0) + "," + Arrow.get(1));
-				// Convert To sendable coords
-				HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
-
-				// Send Move and update GUI
-				ArrayList<Integer> QueenPosCurSend = new ArrayList<>();
-				QueenPosCurSend = gaoTable.get(QueenOld);
-				ArrayList<Integer> QueenPosNewSend = new ArrayList<>();
-				QueenPosNewSend = gaoTable.get(QueenNew);
-				ArrayList<Integer> ArrowPosSend = new ArrayList<>();
-				ArrowPosSend = gaoTable.get(Arrow);
-
-				System.out.println("coordinates after converting");
-				System.out.println("QueenNew: " + QueenPosNewSend.get(0) + "," + QueenPosNewSend.get(1));
-				System.out.println("QueenOld: " + QueenPosCurSend.get(0) + "," + QueenPosCurSend.get(1));
-				System.out.println("Arrow: " + ArrowPosSend.get(0) + "," + ArrowPosSend.get(1));
-
-				System.out.println("locally stored board before the update");
-				this.board.printBoard();
-
-				this.board = this.board.updateGameBoard(this.board, QueenPosCurSend, QueenPosNewSend, ArrowPosSend,
-						true);
-				System.out.println("locally stored board after the update");
-				this.board.printBoard();
-
-				this.gamegui.updateGameState(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
-				gameClient.sendMoveMessage(QueenPosCurSend, QueenPosNewSend, ArrowPosSend);
 			}
+		
+			break;
 
 		default:
 			break;
@@ -661,7 +193,6 @@ public class COSC322Test extends GamePlayer {
 		// TODO Auto-generated method stub
 		gameClient = new GameClient(userName, passwd, this);
 	}
-
 
 	public Board minimax(Node current, int depth) {
 		Node move = MaxValue(current, depth, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -719,7 +250,6 @@ public class COSC322Test extends GamePlayer {
 		return v;
 
 	}
-
 
 	public double value(Board board, boolean max) {
 		TerritoryHeuristic heur = new TerritoryHeuristic();

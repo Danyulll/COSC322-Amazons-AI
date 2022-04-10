@@ -112,7 +112,7 @@ public class TerritoryHeuristic {
 		System.out.println("**********");
 	}
 
-	public double value(Board board) {
+	public static double value(Board board) {
 		TerritoryHeuristic heur = new TerritoryHeuristic();
 		int[][] scoreBoard = heur.closestQueen(board);
 
