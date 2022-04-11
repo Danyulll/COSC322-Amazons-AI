@@ -200,7 +200,7 @@ public class COSC322Test extends GamePlayer {
 
 			break;
 		case GameMessage.GAME_ACTION_MOVE:
-			// this.white = (this.whiteUser.equals(this.userName)) ? true : false;
+			
 			this.getGameGUI().updateGameState(msgDetails);
 
 			ArrayList<Integer> QueenPosCurEnemey = (ArrayList<Integer>) msgDetails

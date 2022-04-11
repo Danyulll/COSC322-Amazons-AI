@@ -179,10 +179,9 @@ public class Agent {
 		int possible = emptySpotCounter * emptySpotCounter;
 		if (possible > 3000)
 			ply = 2;
-		else if (possible <= 3000 && possible > 2216)
+		else if (possible <= 3000)
 			ply = 3;
-		else if (possible <= 2216)
-			ply = 3;
+		
 
 		System.out.println("ply chosen and possible count: (" + ply + "," + possible + ")");
 		return ply;
@@ -269,7 +268,7 @@ public class Agent {
 		// Convert To sendable coords
 		HashMap<ArrayList<Integer>, ArrayList<Integer>> gaoTable = Board.makeGaoTable();
 
-		// Send Move and update GUI
+		// Set move coordinates
 		this.setQueenPosCurSend(gaoTable.get(QueenOld));	
 		this.setQueenPosNewSend((gaoTable.get(QueenNew)));
 		this.setArrowPosSend(gaoTable.get(Arrow));
